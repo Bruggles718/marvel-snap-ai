@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-        "outDir": "dist",
+        "outDir": "dist/client",
         "allowJs": true,
         "checkJs": true,
         "target": "ES5",

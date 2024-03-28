@@ -16,6 +16,6 @@
   "keywords": [],
   "devDependencies": {
     "@types/jquery": "^3.5.29",
-    "esbuild": "^0.20.1"
+    "esbuild": "^0.20.2"
   }
 }
