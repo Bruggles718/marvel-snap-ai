@@ -1,0 +1,24 @@
+{
+  "name": "web_app",
+  "version": "1.0.0",
+  "description": "web_app",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "bash start.bash"
+  },
+  "author": "bradley karmin",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "jquery": "^3.7.1",
+    "socket.io": "^4.7.4",
+    "socket.io-client": "^4.7.4",
+    "typescript": "^5.3.3"
+  },
+  "keywords": [],
+  "devDependencies": {
+    "@types/jquery": "^3.5.29",
+    "esbuild": "^0.20.1"
+  }
+}

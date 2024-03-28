@@ -1,0 +1,26 @@
+@font-face {
+    font-family: menlo;
+    src: url(assets/Menlo-Regular.ttf);
+}
+
+.code {
+    font-family: "menlo";
+}
+
+.flex-container {
+    display: flex; 
+    flex-wrap: wrap;
+}
+
+.center {
+    justify-content: center;
+    align-items: center;
+}
+
+.hidden {
+    display: none;
+}
+
+@media screen and (min-width: 915px) {
+    
+}
