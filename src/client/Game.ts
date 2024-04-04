@@ -17,6 +17,25 @@ const combinations = (arr, min = 1, max) => {
     return combination(arr, max).filter((val) => val.length >= min);
   };
 
+  var permutations = function(values) {
+    var result = [];
+    permute(values, []);
+    return result;
+  };
+
+  var permute = function(values, prefix) {
+    let result = []
+    if (values.length === 0) {
+      result.push(prefix);
+    } else {
+      for (var i = 0; i < values.length; i++) {
+        var newValues = values.slice();
+        var value = newValues.splice(i, 1);
+        permute(newValues, prefix.concat(value));
+      }
+    }
+  };
+
 export class Game {
     public abilities: {[index: string]: (i_game: Game) => any} = {};
     
@@ -134,9 +153,65 @@ export class Game {
         // cardsNotPlayed.length ^ handLength
         let possibleHands = combinations(cardsNotPlayed, handLength, handLength);
 
+        let result = [];
+
         // copy game for each possible hand
         // calculate all possible moves for each possible hand
         // return array of tuples
+        for (let i = 0; i < possibleHands.length; i++) {
+            let hand = possibleHands[i];
+            let game = this.Copy();
+
+            let energy = game.round;
+            // get every permutation of hand
+
+            let allHandPermutations = permutations(hand);
+            
+            // for every permutation
+            // for each card
+            // go through each column
+            // see if less than 4 cards in column
+            // see if have enough energy
+            // if have enough, play card there
+            let allColumnPermutations = permutations([0, 1, 2]);
+
+            for (let j = 0; j < allHandPermutations.length; j++) {
+                let handPermutation = allHandPermutations[j];
+
+                let energyThisHand = energy;
+
+                for (let k = 0; k < handPermutation.length; k++) {
+                    let card = handPermutation[k];
+
+                    for (let l = 0; l < allColumnPermutations.length; l++) {
+                        let columnPermutation = allColumnPermutations[l];
+
+                        let move = new Move();
+
+                        for (let m = 0; m < columnPermutation.length; m++) {
+                            let columnNum = columnPermutation[m];
+                            let column = game.columns[columnNum];
+
+                            let cardsPlayedInColumn = {};
+
+                            for (let idx in move.cardLocations) {
+                                cardsPlayedInColumn[move.cardLocations[idx]] += 1;
+                            }
+
+                            // wrong - also need to check what has been played in a column
+                            if (column.playerCards.length < 4 && energyThisHand - card.energy >= 0) {
+                                move.cardLocations[k] = columnNum;
+                                energyThisHand -= card.energy;
+                            }
+                        }
+                    }
+                }
+
+
+            }
+            
+        }
+        
         
         return [];
     }
