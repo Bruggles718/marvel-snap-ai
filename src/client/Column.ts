@@ -4,6 +4,8 @@ export class Column {
     public playerCards: Array<Card> = [];
     public AICards: Array<Card> = [];
 
+    public revealed: boolean = false;
+
     public ability: string = "";
 
     public GetPlayerValue() {
