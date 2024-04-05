@@ -10,11 +10,14 @@
   "author": "bradley karmin",
   "license": "ISC",
   "dependencies": {
+    "combinations": "^1.0.0",
+    "itertools": "^2.3.1",
     "jquery": "^3.7.1",
     "typescript": "^5.3.3"
   },
   "keywords": [],
   "devDependencies": {
+    "@types/combinations": "^1.0.2",
     "@types/jquery": "^3.5.29",
     "esbuild": "^0.20.2"
   }

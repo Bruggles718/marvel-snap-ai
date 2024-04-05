@@ -1,7 +1,10 @@
 import { Card } from "./Card"
 
 export const cardList = [
-    // List out all cards here
+    new Card("wakanda", 1, 1),
+    new Card("wakanda", 2, 1),
+    new Card("wakanda", 1, 1),
+    new Card("wakanda", 1, 1),
 ]
 
 export function getRandomInt(max: number) {

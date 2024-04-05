@@ -1,40 +1,45 @@
 import { Column } from "./Column";
 import { Move } from "./Move";
-import { Player, cardList } from "./Player";
+import { Player, cardList, getRandomInt } from "./Player";
+import { permutations, range } from "itertools"
+import combinations from "combinations"
 
-const combinations = (arr, min = 1, max) => {
-    const combination = (arr, depth) => {
-      if (depth === 1) {
-        return arr;
-      } else {
-        const result = combination(arr, depth - 1).flatMap((currentArr) =>
-          arr.map((currentItem) => [...currentArr, currentItem])
-        );
-        return arr.concat(result);
-      }
-    };
+// const combinations = (arr, min = 1, max) => {
+//     const combination = (arr, depth) => {
+//       if (depth === 1) {
+//         console.log("arr terminal: " + JSON.stringify(arr));
+//         return arr;
+//       } else {
+//         const result = combination(arr, depth - 1).flatMap((currentArr) =>
+//           arr.map((currentItem) => [...currentArr, currentItem])
+//         );
+//         console.log("result" + JSON.stringify(result));
+//         console.log("arr" + JSON.stringify(arr));
+//         return [...arr, ...result];
+//       }
+//     };
   
-    return combination(arr, max).filter((val) => val.length >= min);
-  };
+//     return combination(arr, max).filter((val) => val.length >= min);
+//   };
 
-  var permutations = function(values) {
-    var result = [];
-    permute(values, []);
-    return result;
-  };
+//   var permutations = function(values) {
+//     var result = [];
+//     permute(values, []);
+//     return result;
+//   };
 
-  var permute = function(values, prefix) {
-    let result = []
-    if (values.length === 0) {
-      result.push(prefix);
-    } else {
-      for (var i = 0; i < values.length; i++) {
-        var newValues = values.slice();
-        var value = newValues.splice(i, 1);
-        permute(newValues, prefix.concat(value));
-      }
-    }
-  };
+//   var permute = function(values, prefix) {
+//     let result = []
+//     if (values.length === 0) {
+//       result.push(prefix);
+//     } else {
+//       for (var i = 0; i < values.length; i++) {
+//         var newValues = values.slice();
+//         var value = newValues.splice(i, 1);
+//         permute(newValues, prefix.concat(value));
+//       }
+//     }
+//   };
 
 export class Game {
     public abilities: {[index: string]: (i_game: Game) => any} = {};
@@ -51,7 +56,9 @@ export class Game {
     ];
 
     constructor() {
-
+        this.abilities["wakanda"] = () => {
+            console.log("doing wakanda");
+        };
     }
 
     public Copy() {
@@ -87,7 +94,7 @@ export class Game {
 
     public MakeMove(i_move: Move, i_AIMove: Move) {
         let cardsToRemoveFromPlayerHand = [];
-        for (let idx in i_move) {
+        for (let idx in i_move.cardLocations) {
             let col = i_move.cardLocations[idx];
             this.columns[col].playerCards.push(this.player.hand[idx]);
             this.player.energy -= this.player.hand[idx].energy;
@@ -98,7 +105,7 @@ export class Game {
         let aiMove = i_AIMove;
 
         let cardsToRemoveFromAiHand = [];
-        for (let idx in aiMove) {
+        for (let idx in aiMove.cardLocations) {
             let col = aiMove.cardLocations[idx];
             this.columns[col].AICards.push(this.AI.hand[idx]);
             this.AI.energy -= this.AI.hand[idx].energy;
@@ -134,90 +141,105 @@ export class Game {
     }
 
     public AIMove(): Move {
-
-        return new Move();
+        let moves = this.GetValidAIMoves();
+        let idx = getRandomInt(moves.length);
+        return moves[idx];
     }
 
     public GetValidPlayerMoves(): Array<[Move, Game]> {
-        let allPossibleCards = [...cardList];
-        let cardsNotPlayed = [];
-        for (let possibleCard of allPossibleCards) {
-            for (let column of this.columns) {
-                if (column.playerCards.indexOf(possibleCard) < 0) {
-                    cardsNotPlayed.push(possibleCard);
-                }
-            }
-        }
-        let copiedBoard = this.Copy();
-        let handLength = copiedBoard.player.hand.length;
-        // cardsNotPlayed.length ^ handLength
-        let possibleHands = combinations(cardsNotPlayed, handLength, handLength);
-
-        let result = [];
-
-        // copy game for each possible hand
-        // calculate all possible moves for each possible hand
-        // return array of tuples
-        for (let i = 0; i < possibleHands.length; i++) {
-            let hand = possibleHands[i];
-            let game = this.Copy();
-
-            let energy = game.round;
-            // get every permutation of hand
-
-            let allHandPermutations = permutations(hand);
-            
-            // for every permutation
-            // for each card
-            // go through each column
-            // see if less than 4 cards in column
-            // see if have enough energy
-            // if have enough, play card there
-            let allColumnPermutations = permutations([0, 1, 2]);
-
-            for (let j = 0; j < allHandPermutations.length; j++) {
-                let handPermutation = allHandPermutations[j];
-
-                let energyThisHand = energy;
-
-                for (let k = 0; k < handPermutation.length; k++) {
-                    let card = handPermutation[k];
-
-                    for (let l = 0; l < allColumnPermutations.length; l++) {
-                        let columnPermutation = allColumnPermutations[l];
-
-                        let move = new Move();
-
-                        for (let m = 0; m < columnPermutation.length; m++) {
-                            let columnNum = columnPermutation[m];
-                            let column = game.columns[columnNum];
-
-                            let cardsPlayedInColumn = {};
-
-                            for (let idx in move.cardLocations) {
-                                cardsPlayedInColumn[move.cardLocations[idx]] += 1;
-                            }
-
-                            // wrong - also need to check what has been played in a column
-                            if (column.playerCards.length < 4 && energyThisHand - card.energy >= 0) {
-                                move.cardLocations[k] = columnNum;
-                                energyThisHand -= card.energy;
-                            }
-                        }
-                    }
-                }
-
-
-            }
-            
-        }
-        
-        
         return [];
     }
 
     public GetValidAIMoves(): Array<Move> {
-        return [];
+        let result = [];
+
+        // get all possible combinations of cards played into columns
+        // remove all combinations that have invalid energy counts
+
+        let possibleColumns = [];
+
+        for (let i = 0; i < this.columns.length; i++) {
+            let spacesRemaining = 4 - this.columns[i].AICards.length;
+
+            for (let j = 0; j < spacesRemaining; j++) {
+                possibleColumns.push(i);
+            }
+        }
+
+        let permDict = {};
+        let groupedPerms = [];
+        for (let j = 0; j < this.AI.hand.length; j++) {
+            groupedPerms.push([]);
+        }
+        for (let j = 1; j <= this.AI.hand.length; j++) {
+            for (let i of permutations(possibleColumns, j)) {
+                let stringRepresentation = "";
+                for (let digit of i) {
+                    stringRepresentation += digit as string;
+                }
+                permDict[stringRepresentation] = i;
+            }
+        }
+
+        for (let idx in permDict) {
+            groupedPerms[idx.length-1].push(permDict[idx]);
+        }
+
+        //console.log(groupedPerms);
+
+        let handRange = [...Array(this.AI.hand.length).keys()];
+        
+        let groupedHandCombos = []
+        for (let j = 0; j < this.AI.hand.length; j++) {
+            groupedHandCombos.push([]);
+        }
+        let handCombos = combinations(handRange, 1, this.AI.hand.length);
+        for (let arr of handCombos) {
+            groupedHandCombos[arr.length-1].push(arr);
+        }
+        //console.log(groupedHandCombos);
+
+        let allPotentialMoves = [];
+
+        for (let j = 0; j < this.AI.hand.length; j++) {
+            let possibleHands = groupedHandCombos[j];
+            let possibleColumnOrders = groupedPerms[j];
+
+            for (let k = 0; k < possibleColumnOrders.length; k++) {
+                let columnOrder = possibleColumnOrders[k];
+                for (let l = 0; l < possibleHands.length; l++) {
+                    let currentHand = possibleHands[l];
+                    let move = new Move();
+                    for (let m = 0; m < currentHand.length; m++) {
+                        move.cardLocations[currentHand[m]] = columnOrder[m];
+                        allPotentialMoves.push(move);
+                    }
+                }
+            }
+        }
+
+        for (let i = 0; i < allPotentialMoves.length; i++) {
+            let move = allPotentialMoves[i];
+
+            if (this.round - move.CalculateEnergyCost(this.AI.hand) >= 0) {
+                result.push(move);
+            } 
+        }
+
+        return result;
+
+
+        // let game = this.Copy();
+        // for (let i = 0; i < game.AI.hand.length; i++) {
+        //     for (let j = 0; j < game.columns.length; j++) {
+        //         if (game.columns[j].AICards.length < 4) {
+        //             let move = new Move();
+        //             move.cardLocations[i] = j;
+        //             result.push(move);
+        //         }
+        //     }
+        // }
+        // return result;
     }
 
     public Minimax(i_game: Game, i_depth: number, i_alpha: number, i_beta: number, i_maximizingPlayer: boolean) {
