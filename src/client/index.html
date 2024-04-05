@@ -7,94 +7,122 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="keywords" content="HTML, CSS">
     <meta name="description" content="Test website">
-    <link rel="stylesheet" type="text/css" href="testing.css" /> 
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" type="text/css" href="App.css" /> 
     <title>Document</title>
 </head>
-<body> 
-    <div class="Center">
-        <div class="Header">
-            <div class="Player">
-                <p class="PlayerName">L</p>
-            </div>
-
-            <div class="TimeCenter">
-                <p class="Time">99</p>
-            </div>
-
-            <div class="AI">
-                <p class="AIName">R</p>
-            </div>
-            
+<body>
+    <div id="Gameplay-Area" class="w3-topbar w3-bottombar w3-leftbar w3-border-blue w3-rightbar">
+        <div id="Header" class="w3-row">
+            <div id="PlayerImg" class="w3-col s3 w3-center w3-grey"><p>p</p></div>
+            <div id="CosmicCube" class="w3-col s3 w3-center w3-grey"><p>p</p></div>
+            <div id="AIImg" class="w3-col s3 w3-center w3-grey"><p>p</p></div>
         </div>
-        <div class="MiddleArea">
-            <div class="MiddleAreaLeft">
-                <div class="MiddleLeftTop">
-                    <p class="TopLeft">L</p>
-                    <p class="TopRight">L</p>
-                    <p class="BottomLeft">L</p>
-                    <p class="BottomRight">L</p>
+        <!-- Where the cards are played -->
+        <div id="PlayArea" class="w3-row w3-topbar w3-bottombar w3-leftbar w3-border-yellow w3-rightbar">
+            <div id="LeftColumn" class="w3-col l3 w3-topbar w3-bottombar w3-leftbar w3-border-red w3-rightbar">
+                <div id="TopLeftAICards" class="w3-margin-top w3-margin-bottom w3-col l9 w3-center w3-topbar w3-bottombar w3-leftbar w3-border-green w3-rightbar w3-margin-left">
+                    <!-- Can rename using what the index would be -->
+                    <!-- Like 'AI Col-0 Row-0' -->
+                    <div id="LeftTop-TopRow" class="w3-row">
+                        <div id="LeftTop-TopLeftAICard" class="w3-col s6 w3-center w3-grey"><p>p</p></div>
+                        <div id="LeftTop-TopRightAICard" class="w3-col s6 w3-center w3-grey"><p>p</p></div>
+                    </div>
+                    <div id="LeftTop-BottomRow" class="w3-row">
+                        <div id="LeftTop-BottomLeftAICard"class="w3-col s6 w3-center w3-grey"><p>p</p></div>
+                        <div id="LeftTop-BottomRightAICard"class="w3-col s6 w3-center w3-grey"><p>p</p></div>
+                    </div>
+                    
                 </div>
-                <div class="MiddleCard">
-                    <p class="Card">L</p>
+                <div id="LeftLocation" class="w3-margin-top w3-margin-bottom w3-col l9 w3-center w3-topbar w3-bottombar w3-leftbar w3-border-red w3-rightbar w3-margin-left">
+                    <header>AI Points</header>
+                    <p>Text</p>
+                    <header>Player Points</header>
                 </div>
-                <div class="MiddleLeftBottom">
-                    <p class="TopLeft">L</p>
-                    <p class="TopRight">L</p>
-                    <p class="BottomLeft">L</p>
-                    <p class="BottomRight">L</p>
-                </div>
-            </div>
-            <div class="MiddleAreaMiddle">
-                <div class="MiddleLeftTop">
-                    <p class="TopLeft">L</p>
-                    <p class="TopRight">L</p>
-                    <p class="BottomLeft">L</p>
-                    <p class="BottomRight">L</p>
-                </div>
-                <div class="MiddleCard">
-                    <p class="Card">L</p>
-                </div>
-                <div class="MiddleLeftBottom">
-                    <p class="TopLeft">L</p>
-                    <p class="TopRight">L</p>
-                    <p class="BottomLeft">L</p>
-                    <p class="BottomRight">L</p>
+                <div id="BottomLeftPlayerCards" class="w3-margin-top w3-margin-bottom w3-col l9 w3-center w3-topbar w3-bottombar w3-leftbar w3-border-green w3-rightbar w3-margin-left">
+                    <div id="LeftBottom-TopRow" class="w3-row">
+                        <div id="LeftBottom-BottmLeftPlayerCard" class="w3-col s6 w3-center w3-grey"><p>p</p></div>
+                        <div id="LeftBottom-BottomRightPlayerCard" class="w3-col s6 w3-center w3-grey"><p>p</p></div>
+                    </div>
+                    <div id="LeftBottom-BottomRow" class="w3-row">
+                        <div id="LeftBottom-BottomLeftPlayerCard"class="w3-col s6 w3-center w3-grey"><p>p</p></div>
+                        <div id="LeftBottom-BottomRightPlayerCard"class="w3-col s6 w3-center w3-grey"><p>p</p></div>
+                    </div>
                 </div>
             </div>
-            <div class="MiddleAreaRight">
-                <div class="MiddleLeftTop">
-                    <p class="TopLeft">L</p>
-                    <p class="TopRight">L</p>
-                    <p class="BottomLeft">L</p>
-                    <p class="BottomRight">L</p>
+            <div id="MiddleColumn" class="w3-col l3 w3-topbar w3-bottombar w3-leftbar w3-border-red w3-rightbar">
+                <div id="TopMiddleAICards" class="w3-margin-top w3-margin-bottom w3-col l9 w3-center w3-topbar w3-bottombar w3-leftbar w3-border-green w3-rightbar w3-margin-left">
+                    <!-- Can rename using what the index would be -->
+                    <!-- Like 'AI Col-0 Row-0' -->
+                    <div id="MiddleTop-TopRow" class="w3-row">
+                        <div id="MiddleTop-TopLeftAICard" class="w3-col s6 w3-center w3-grey"><p>p</p></div>
+                        <div id="MiddleTop-TopRightAICard" class="w3-col s6 w3-center w3-grey"><p>p</p></div>
+                    </div>
+                    <div id="MiddleTop-BottomRow" class="w3-row">
+                        <div id="MiddleTop-BottomLeftAICard"class="w3-col s6 w3-center w3-grey"><p>p</p></div>
+                        <div id="MiddleTop-BottomRightAICard"class="w3-col s6 w3-center w3-grey"><p>p</p></div>
+                    </div>
+                    
                 </div>
-                <div class="MiddleCard">
-                    <p class="Card">L</p>
+                <div id="MiddleLocation" class="w3-margin-top w3-margin-bottom w3-col l9 w3-center w3-topbar w3-bottombar w3-leftbar w3-border-red w3-rightbar w3-margin-left">
+                    <header>AI Points</header>
+                    <p>Text</p>
+                    <header>Player Points</header>
                 </div>
-                <div class="MiddleLeftBottom">
-                    <p class="TopLeft">L</p>
-                    <p class="TopRight">L</p>
-                    <p class="BottomLeft">L</p>
-                    <p class="BottomRight">L</p>
+                <div id="BottomMiddlePlayerCards" class="w3-margin-top w3-margin-bottom w3-col l9 w3-center w3-topbar w3-bottombar w3-leftbar w3-border-green w3-rightbar w3-margin-left">
+                    <div id="MiddleBottom-TopRow" class="w3-row">
+                        <div id="MiddleBottom-TopLeftPlayerCard" class="w3-col s6 w3-center w3-grey"><p>p</p></div>
+                        <div id="MiddleBottom-TopRightPlayerCard" class="w3-col s6 w3-center w3-grey"><p>p</p></div>
+                    </div>
+                    <div id="MiddleBottom-BottomRow" class="w3-row">
+                        <div id="MiddleBottom-BottmLeftPlayerCard"class="w3-col s6 w3-center w3-grey"><p>p</p></div>
+                        <div id="MiddleBottom-BottomRightPlayerCard"class="w3-col s6 w3-center w3-grey"><p>p</p></div>
+                    </div>
                 </div>
             </div>
-
-            
+            <div id="RightColumn" class="w3-col l3 w3-topbar w3-bottombar w3-leftbar w3-border-red w3-rightbar">
+                <div id="TopRightAICards" class="w3-margin-top w3-margin-bottom w3-col l9 w3-center w3-topbar w3-bottombar w3-leftbar w3-border-green w3-rightbar w3-margin-left">
+                    <!-- Can rename using what the index would be -->
+                    <!-- Like 'AI Col-0 Row-0' -->
+                    <div id="RightTop-TopRow" class="w3-row">
+                        <div id="RightTop-TopLeftAICard" class="w3-col s6 w3-center w3-grey"><p>p</p></div>
+                        <div id="RightTop-TopRightAICard" class="w3-col s6 w3-center w3-grey"><p>p</p></div>
+                    </div>
+                    <div id="RightTop-BottomRow" class="w3-row">
+                        <div id="RightTop-BottomLeftAICard"class="w3-col s6 w3-center w3-grey"><p>p</p></div>
+                        <div id="RightTop-BottomRightAICard"class="w3-col s6 w3-center w3-grey"><p>p</p></div>
+                    </div>
+                    
+                </div>
+                <div id="RightLocation" class="w3-margin-top w3-margin-bottom w3-col l9 w3-center w3-topbar w3-bottombar w3-leftbar w3-border-red w3-rightbar w3-margin-left">
+                    <header>AI Points</header>
+                    <p>Text</p>
+                    <header>Player Points</header>
+                </div>
+                <div id="BottomRightPlayerCards" class="w3-margin-top w3-margin-bottom w3-col l9 w3-center w3-topbar w3-bottombar w3-leftbar w3-border-green w3-rightbar w3-margin-left">
+                    <div id="RightBottom-TopRow" class="w3-row">
+                        <div id="RightBottom-TopLeftPlayerCard" class="w3-col s6 w3-center w3-grey"><p>p</p></div>
+                        <div id="RighteBottom-TopRightPlayerCard" class="w3-col s6 w3-center w3-grey"><p>p</p></div>
+                    </div>
+                    <div id="RightBottom-BottomRow" class="w3-row">
+                        <div id="RightBottom-BottmLeftPlayerCard"class="w3-col s6 w3-center w3-grey"><p>p</p></div>
+                        <div id="RightBottom-BottomRightPlayerCard"class="w3-col s6 w3-center w3-grey"><p>p</p></div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="Header">
-            <div class="Player">
-                <p class="PlayerName">L</p>
-            </div>
-
-            <div class="TimeCenter">
-                <p class="Time">99</p>
-            </div>
-
-            <div class="AI">
-                <p class="AIName">R</p>
-            </div>
-            
+        <div id="PlayerDeck" class="w3-row deck deck-height w3-center w3-topbar w3-bottombar w3-leftbar w3-border-yellow w3-rightbar">
+            <div id="Card-3" class="w3-col left-padding w3-margin-right l2 w3-topbar w3-bottombar w3-leftbar w3-border-red w3-rightbar"><p>p</p></div>
+            <div id="Card-1" class="w3-col w3-margin-right l2 w3-topbar w3-bottombar w3-leftbar w3-border-red w3-rightbar"><p>p</p></div>
+            <div id="Card-0" class="w3-col w3-margin-right l2 w3-topbar w3-bottombar w3-leftbar w3-border-red w3-rightbar"><p>p</p></div>
+            <div id="Card-2" class="w3-col l2 w3-margin-right w3-topbar w3-bottombar w3-leftbar w3-border-red w3-rightbar"><p>p</p></div>
+            <div id="Card-4" class="w3-col l2 w3-topbar w3-bottombar w3-leftbar w3-border-red w3-rightbar"><p>p</p></div>
         </div>
+        <div id="PlayerOptions" class="w3-row">
+            <div id="Retreat" class="w3-col s3 w3-center w3-grey"><p>p</p></div>
+            <div id="Energy" class="w3-col s3 w3-center w3-grey"><p>p</p></div>
+            <div id="TurnNumber" class="w3-col s3 w3-center w3-grey"><p>p</p></div>
         </div>
+    </div>
 </body>
 </html>

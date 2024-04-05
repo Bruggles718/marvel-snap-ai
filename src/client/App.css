@@ -1,0 +1,46 @@
+#Gameplay-Area {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    
+    height: 100%;
+    transform: translate(-50%, -50%);
+}
+
+
+#CosmicCube {
+    margin-right: 12%;
+    margin-left: 13%;
+}
+
+#Energy {
+    margin-right: 12%;
+    margin-left: 13%;
+}
+
+#PlayArea {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+#MiddleColumn {
+    margin-right: 12%;
+    margin-left: 13%;
+}
+
+#RightColumn {
+    padding-left: 1px;
+}
+
+
+.left-padding {
+    margin-left: 24px;
+}
+
+.deck-height {
+    height: 114px;
+}
+.deck {
+    display: flex;
+    align-items: center;
+}
