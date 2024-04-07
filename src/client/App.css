@@ -2,7 +2,6 @@
     position: absolute;
     left: 50%;
     top: 50%;
-    
     height: 100%;
     transform: translate(-50%, -50%);
 }
@@ -34,7 +33,7 @@
 
 
 .left-padding {
-    margin-left: 24px;
+    margin-left: 16px;
 }
 
 .deck-height {
@@ -43,4 +42,9 @@
 .deck {
     display: flex;
     align-items: center;
+}
+
+.card-width {
+    width: 100px !important;
+    height: 150px !important;
 }
