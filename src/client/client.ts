@@ -1,6 +1,7 @@
 import $ from "jquery";
 import { Game } from "./Game";
 import { Move } from "./Move";
+import { getRandomInt } from "./Player";
 
 console.log("client.js executing");
 
@@ -11,8 +12,11 @@ game.AI.initHand();
 
 game.StartTurn();
 
-let playerMove = new Move();
-playerMove.cardLocations[0] = 0;
+let validPlayerMoves = game.GetValidPlayerMoves();
+
+let idx = getRandomInt(validPlayerMoves.length);
+
+let playerMove = validPlayerMoves[idx];
 
 console.log(playerMove);
 
@@ -22,4 +26,11 @@ console.log(AIMove);
 
 console.log(game);
 
-console.log(game.GetValidAIMoves());
+// game.MakeMove(playerMove, AIMove);
+// console.log(game);
+
+// let copiedGame = game.Copy();
+// copiedGame.SwapPlayers()
+// console.log(copiedGame);
+
+//console.log(game.SwapPlayers());

@@ -1,10 +1,18 @@
 import { Card } from "./Card"
 
 export const cardList = [
-    new Card("wakanda", 1, 1),
-    new Card("wakanda", 2, 1),
-    new Card("wakanda", 1, 1),
-    new Card("wakanda", 1, 1),
+    new Card("Medusa", 2, 2),
+    new Card("Hulk", 6, 12),
+    new Card("Quicksilver", 1, 2),
+    new Card("Klaw", 5, 4),
+    new Card("Ironheart", 3, 0),
+    new Card("Domino", 2, 3),
+    new Card("Captain America", 3, 3),
+    new Card("Namor", 4, 6),
+    new Card("Ant Man", 1, 1),
+    new Card("Thing", 4, 6),
+    new Card("Black Panther", 5, 4),
+    new Card("Cyclops", 3, 4)
 ]
 
 export function getRandomInt(max: number) {

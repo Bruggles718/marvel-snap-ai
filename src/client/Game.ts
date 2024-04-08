@@ -67,9 +67,9 @@ export class Game {
         result.player.energy = this.player.energy;
         result.player.hand = [...this.player.hand];
 
-        result.AI.deck = [...this.player.deck];
-        result.AI.energy = this.player.energy;
-        result.AI.hand = [...this.player.hand];
+        result.AI.deck = [...this.AI.deck];
+        result.AI.energy = this.AI.energy;
+        result.AI.hand = [...this.AI.hand];
 
         result.columns = []
 
@@ -98,7 +98,7 @@ export class Game {
             let col = i_move.cardLocations[idx];
             this.columns[col].playerCards.push(this.player.hand[idx]);
             this.player.energy -= this.player.hand[idx].energy;
-            cardsToRemoveFromPlayerHand.push(idx);
+            cardsToRemoveFromPlayerHand.push(parseInt(idx));
         }
 
         // AI does move
@@ -109,17 +109,21 @@ export class Game {
             let col = aiMove.cardLocations[idx];
             this.columns[col].AICards.push(this.AI.hand[idx]);
             this.AI.energy -= this.AI.hand[idx].energy;
-            cardsToRemoveFromAiHand.push(idx);
+            cardsToRemoveFromAiHand.push(parseInt(idx));
         }
 
         // do column abilities
 
         for (let cardIdx of cardsToRemoveFromPlayerHand) {
-            this.abilities[this.player.hand[cardIdx].name](this);
+            if (this.abilities[this.player.hand[cardIdx].name]) {
+                this.abilities[this.player.hand[cardIdx].name](this);
+            }
         }
 
         for (let cardIdx of cardsToRemoveFromAiHand) {
-            this.abilities[this.AI.hand[cardIdx].name](this);
+            if (this.abilities[this.AI.hand[cardIdx].name]) {
+                this.abilities[this.AI.hand[cardIdx].name](this);
+            }
         }
 
         let newHand = [];
@@ -140,6 +144,17 @@ export class Game {
         this.AI.hand = [...newAIHand];
     }
 
+    public SwapPlayers() {
+        let copiedGame = this.Copy();
+
+        this.player = copiedGame.AI;
+        this.AI = copiedGame.player;
+        for (let i = 0; i < this.columns.length; i++) {
+            this.columns[i].playerCards = copiedGame.columns[i].AICards;
+            this.columns[i].AICards = copiedGame.columns[i].playerCards;
+        }
+    }
+
     public AIMove(): Move {
         let moves = this.GetValidAIMoves();
         let idx = getRandomInt(moves.length);
@@ -147,7 +162,46 @@ export class Game {
     }
 
     public GetValidPlayerMoves(): Array<[Move, Game]> {
-        return [];
+        // for every possible player hand
+        // we make a game, and swap the player and ai
+        // then call getvalidai moves
+        // then, associate the moves, with the game
+        let allPossibleCards = [...cardList];
+        let cardsNotPlayed = [];
+        let cardsPlayed = [];
+        for (let column of this.columns) {
+            cardsPlayed.push(...column.playerCards);
+        }
+        for (let possibleCard of allPossibleCards) {
+            if (cardsPlayed.indexOf(possibleCard) < 0) {
+                cardsNotPlayed.push(possibleCard);
+            }
+        }
+
+        //console.log(cardsNotPlayed);
+
+        let copiedBoard = this.Copy();
+        let handLength = copiedBoard.player.hand.length;
+        // cardsNotPlayed.length ^ handLength
+        let possibleHands = combinations(cardsNotPlayed, handLength, handLength);
+
+        console.log(possibleHands);
+
+        let result = [];
+
+        for (let hand of possibleHands) {
+            if (hand.length > handLength) continue;
+            let copiedGame = this.Copy();
+            copiedGame.SwapPlayers();
+            copiedGame.player.hand = hand;
+            let validMoves = copiedGame.GetValidAIMoves();
+            let copiedGameResult = this.Copy();
+            for (let move of validMoves) {
+                result.push([move, copiedGameResult]);
+            }
+        }
+
+        return result;
     }
 
     public GetValidAIMoves(): Array<Move> {
@@ -242,7 +296,13 @@ export class Game {
         // return result;
     }
 
-    public Minimax(i_game: Game, i_depth: number, i_alpha: number, i_beta: number, i_maximizingPlayer: boolean) {
+    public ScorePosition() {
+        
+    }
 
+    public Minimax(i_game: Game, i_depth: number, i_alpha: number, i_beta: number, i_maximizingPlayer: boolean) {
+        if (i_depth === 0) {
+
+        }
     }
 }
