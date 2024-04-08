@@ -7,24 +7,42 @@ console.log("client.js executing");
 
 let game = new Game();
 
-game.player.initHand();
-game.AI.initHand();
+const doGame = (i_game) => {
+    let g_copy = i_game.Copy();
+    g_copy.SwapPlayers();
+    
+    let validPlayerMoves = g_copy.GetValidAIMoves();
+    
+    let idx = getRandomInt(validPlayerMoves.length);
+    
+    let playerMove = validPlayerMoves[idx];
+    
+    //console.log(playerMove);
+    
+    let AIMove = i_game.AIMove(playerMove, 2);
+    
+    //console.log(AIMove);
+    i_game.MakeMove(playerMove, AIMove);
 
-game.StartTurn();
+    console.log(i_game);
+}
 
-let validPlayerMoves = game.GetValidPlayerMoves();
+export function doMove() {
+    doGame(game);
+}
 
-let idx = getRandomInt(validPlayerMoves.length);
+(window as any).doMove = doMove;
 
-let playerMove = validPlayerMoves[idx];
+window.onload = () => {
+    
 
-console.log(playerMove);
+    game.player.initHand();
+    game.AI.initHand();
+    
+    game.StartTurn();
+}
 
-let AIMove = game.AIMove();
 
-console.log(AIMove);
-
-console.log(game);
 
 // game.MakeMove(playerMove, AIMove);
 // console.log(game);

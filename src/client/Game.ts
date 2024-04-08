@@ -94,22 +94,33 @@ export class Game {
 
     public MakeMove(i_move: Move, i_AIMove: Move) {
         let cardsToRemoveFromPlayerHand = [];
-        for (let idx in i_move.cardLocations) {
-            let col = i_move.cardLocations[idx];
-            this.columns[col].playerCards.push(this.player.hand[idx]);
-            this.player.energy -= this.player.hand[idx].energy;
-            cardsToRemoveFromPlayerHand.push(parseInt(idx));
+        if (i_move) {
+            for (let idx in i_move.cardLocations) {
+                let col = i_move.cardLocations[idx];
+                this.columns[col].playerCards.push(this.player.hand[idx]);
+                try {
+                    this.player.energy -= this.player.hand[parseInt(idx)].energy;
+                } catch (e) {
+                    console.error("Hand idx was invalid: ");
+                    console.error(this.player.hand);
+                }
+                
+                cardsToRemoveFromPlayerHand.push(parseInt(idx));
+            }
         }
 
         // AI does move
         let aiMove = i_AIMove;
-
+        
         let cardsToRemoveFromAiHand = [];
-        for (let idx in aiMove.cardLocations) {
-            let col = aiMove.cardLocations[idx];
-            this.columns[col].AICards.push(this.AI.hand[idx]);
-            this.AI.energy -= this.AI.hand[idx].energy;
-            cardsToRemoveFromAiHand.push(parseInt(idx));
+
+        if (aiMove) {
+            for (let idx in aiMove.cardLocations) {
+                let col = aiMove.cardLocations[idx];
+                this.columns[col].AICards.push(this.AI.hand[idx]);
+                this.AI.energy -= this.AI.hand[idx].energy;
+                cardsToRemoveFromAiHand.push(parseInt(idx));
+            }
         }
 
         // do column abilities
@@ -142,6 +153,12 @@ export class Game {
             }
         }
         this.AI.hand = [...newAIHand];
+
+        this.round++;
+        this.player.energy = this.round;
+        this.AI.energy = this.round;
+        this.player.drawNewCard();
+        this.AI.drawNewCard();
     }
 
     public SwapPlayers() {
@@ -155,10 +172,8 @@ export class Game {
         }
     }
 
-    public AIMove(): Move {
-        let moves = this.GetValidAIMoves();
-        let idx = getRandomInt(moves.length);
-        return moves[idx];
+    public AIMove(i_playerMove: Move, i_depth: number): Move {
+        return this.Minimax(this.Copy(), i_depth, Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY, true, i_playerMove)[0];
     }
 
     public GetValidPlayerMoves(): Array<[Move, Game]> {
@@ -185,7 +200,7 @@ export class Game {
         // cardsNotPlayed.length ^ handLength
         let possibleHands = combinations(cardsNotPlayed, handLength, handLength);
 
-        console.log(possibleHands);
+        //console.log(possibleHands);
 
         let result = [];
 
@@ -297,12 +312,70 @@ export class Game {
     }
 
     public ScorePosition() {
-        
+        let result = 0;
+
+        for (let column of this.columns) {
+            result += (column.GetAIValue() - column.GetPlayerValue());
+        }
+
+        return result;
     }
 
-    public Minimax(i_game: Game, i_depth: number, i_alpha: number, i_beta: number, i_maximizingPlayer: boolean) {
+    public Minimax(i_game: Game, i_depth: number, i_alpha: number, i_beta: number, i_maximizingPlayer: boolean, i_otherMove: Move): [Move, number] {
+        console.log("got here");
         if (i_depth === 0) {
+            return [undefined, i_game.ScorePosition()];
+        }
 
+        let alpha = i_alpha;
+        let beta = i_beta;
+
+        if (i_maximizingPlayer) {
+            console.log("got here2");
+            let value = Number.NEGATIVE_INFINITY;
+            let move = new Move();
+            let validAIMoves = i_game.GetValidAIMoves();
+            for (let validMove of validAIMoves) {
+                let g_copy = i_game.Copy();
+                let opponentMove = this.Minimax(g_copy.Copy(), i_depth, alpha, beta, false, validMove)[0];
+                g_copy.MakeMove(validMove, opponentMove);
+                let new_score = this.Minimax(g_copy.Copy(), i_depth - 1, alpha, beta, false, opponentMove)[1];
+                if (new_score > value) {
+                    value = new_score;
+                    move = validMove;
+                }
+                alpha = Math.max(alpha, value);
+
+                if (alpha >= i_beta) {
+                    break;
+                }
+            }
+            return [move, value];
+        } else {
+            console.log("got here3");
+            let value = Number.POSITIVE_INFINITY;
+            let move = new Move();
+
+            let validPlayerMoves = i_game.GetValidPlayerMoves();
+            for (let validMove of validPlayerMoves) {
+                let g_copy = validMove[1].Copy();
+                let opponentMove = i_otherMove;
+                g_copy.MakeMove(validMove[0], opponentMove);
+                let new_score = this.Minimax(g_copy.Copy(), i_depth - 1, alpha, beta, true, null)[1];
+
+                if (new_score < value) {
+                    value = new_score;
+                    move = validMove[0];
+                }
+
+                beta = Math.min(beta, value);
+
+                if (alpha >= beta) {
+                    break;
+                }
+            }
+
+            return [move, value];
         }
     }
 }

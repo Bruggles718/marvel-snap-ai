@@ -26,11 +26,22 @@ export class Player {
     public hand: Array<Card> = [];
 
     public initHand() {
-        for (let i = 0; i < 4; i++) {
+        let newDeck = [];
+        for (let i = 0; i < 12; i++) {
             let idx = getRandomInt(this.deck.length);
-            this.hand.push(this.deck[idx]);
+            newDeck.push(this.deck[idx]);
             this.deck.splice(idx, 1);
         }
+
+        this.deck = [...newDeck];
+        
+        for (let i = 0; i < 4; i++) {
+            this.hand.push(this.deck.pop());
+        }
+    }
+
+    public drawNewCard() {
+        this.hand.push(this.deck.pop());
     }
 
     
