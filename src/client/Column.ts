@@ -23,4 +23,22 @@ export class Column {
         }
         return result;
     }
+
+    public ToHash() {
+        let result = "";
+        const iDefault = 2;
+        let i = iDefault;
+        for (let card of this.playerCards) {
+            result += card.ToHash();
+            i++;
+        }
+
+        i = iDefault;
+        for (let card of this.AICards) {
+            result += card.ToHash();
+            i++;
+        }
+
+        return result;
+    }
 }

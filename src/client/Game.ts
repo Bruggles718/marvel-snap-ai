@@ -41,6 +41,11 @@ import combinations from "combinations"
 //     }
 //   };
 
+export const validPlayerMovesPerGame = {};
+export const validAIMovesPerGame = {};
+
+export const hashToGame = {};
+
 export class Game {
     public abilities: {[index: string]: (i_game: Game) => any} = {};
     
@@ -59,6 +64,30 @@ export class Game {
         this.abilities["wakanda"] = () => {
             console.log("doing wakanda");
         };
+    }
+
+    public ToHash() {
+        let result = "";
+        const iDefault = 2;
+        let i = iDefault;
+        for (let card of this.player.hand) {
+            result += card.ToHash();
+            i++;
+        }
+
+        i = iDefault;
+        for (let card of this.AI.hand) {
+            result += card.ToHash();
+            i++;
+        }
+
+        for (let column of this.columns) {
+            result += column.ToHash();
+        }
+
+        result += this.round.toString();
+
+        return result;
     }
 
     public Copy() {
@@ -101,7 +130,7 @@ export class Game {
                 try {
                     this.player.energy -= this.player.hand[parseInt(idx)].energy;
                 } catch (e) {
-                    console.error("Hand idx was invalid: ");
+                    console.error("Hand idx " + idx + "was invalid!");
                     console.error(this.player.hand);
                 }
                 
@@ -177,6 +206,11 @@ export class Game {
     }
 
     public GetValidPlayerMoves(): Array<[Move, Game]> {
+        if (validPlayerMovesPerGame[this.ToHash()]) {
+            //console.log("found player moves");
+            return validPlayerMovesPerGame[this.ToHash()];
+        }
+
         // for every possible player hand
         // we make a game, and swap the player and ai
         // then call getvalidai moves
@@ -203,6 +237,7 @@ export class Game {
         //console.log(possibleHands);
 
         let result = [];
+        result.push([new Move(), this.Copy()])
 
         for (let hand of possibleHands) {
             if (hand.length > handLength) continue;
@@ -216,10 +251,24 @@ export class Game {
             }
         }
 
+        validPlayerMovesPerGame[this.ToHash()] = result;
+
         return result;
     }
 
     public GetValidAIMoves(): Array<Move> {
+        if (validAIMovesPerGame[this.ToHash()]) {
+            //console.log("found ai moves");
+            //console.log(validAIMovesPerGame);
+            // if (hashToGame[this.ToHash()]) {
+            //     console.log("game found: ");
+            //     console.log(hashToGame[this.ToHash()]);
+            //     console.log("this game: ");
+            //     console.log(this);
+            // }
+            return validAIMovesPerGame[this.ToHash()];
+        }
+
         let result = [];
 
         // get all possible combinations of cards played into columns
@@ -295,6 +344,9 @@ export class Game {
             } 
         }
 
+        validAIMovesPerGame[this.ToHash()] = result;
+        hashToGame[this.ToHash()] = this;
+
         return result;
 
 
@@ -322,8 +374,9 @@ export class Game {
     }
 
     public Minimax(i_game: Game, i_depth: number, i_alpha: number, i_beta: number, i_maximizingPlayer: boolean, i_otherMove: Move): [Move, number] {
-        console.log("got here");
+        console.log("minimaxCalled. depth: " + i_depth);
         if (i_depth === 0) {
+            //console.log("round number: " + i_game.round);
             return [undefined, i_game.ScorePosition()];
         }
 
@@ -331,51 +384,67 @@ export class Game {
         let beta = i_beta;
 
         if (i_maximizingPlayer) {
-            console.log("got here2");
+            //console.log("got here2");
             let value = Number.NEGATIVE_INFINITY;
             let move = new Move();
             let validAIMoves = i_game.GetValidAIMoves();
+            //console.log("validAIMoves: " + validAIMoves.length);
+            let i = 0;
             for (let validMove of validAIMoves) {
+                //console.log("processed move "+ i);
                 let g_copy = i_game.Copy();
-                let opponentMove = this.Minimax(g_copy.Copy(), i_depth, alpha, beta, false, validMove)[0];
-                g_copy.MakeMove(validMove, opponentMove);
-                let new_score = this.Minimax(g_copy.Copy(), i_depth - 1, alpha, beta, false, opponentMove)[1];
-                if (new_score > value) {
-                    value = new_score;
-                    move = validMove;
+                let validPlayerMoves = g_copy.GetValidPlayerMoves();
+                let j = 0;
+                //console.log("Valid player moves: " + validPlayerMoves.length);
+                for (let validPlayerMove of validPlayerMoves) {
+                    //console.log("processed inner move "+ j);
+                    let g_copy2 = validPlayerMove[1].Copy();
+                    let opponentMove = validPlayerMove[0];
+                    g_copy2.MakeMove(opponentMove, validMove);
+                    let new_score = this.Minimax(g_copy2, i_depth - 1, alpha, beta, true, validPlayerMove[0])[1];
+                    if (new_score > value) {
+                        value = new_score;
+                        move = validMove;
+                    }
+                    j++;
                 }
-                alpha = Math.max(alpha, value);
 
-                if (alpha >= i_beta) {
-                    break;
-                }
+                // alpha = Math.max(alpha, value);
+
+                // if (alpha >= i_beta) {
+                //     break;
+                // }
+
+                i++;
             }
             return [move, value];
-        } else {
-            console.log("got here3");
-            let value = Number.POSITIVE_INFINITY;
-            let move = new Move();
+        } 
+        // else {
+        //     //console.log("got here3");
+        //     let value = Number.POSITIVE_INFINITY;
+        //     let move = new Move();
 
-            let validPlayerMoves = i_game.GetValidPlayerMoves();
-            for (let validMove of validPlayerMoves) {
-                let g_copy = validMove[1].Copy();
-                let opponentMove = i_otherMove;
-                g_copy.MakeMove(validMove[0], opponentMove);
-                let new_score = this.Minimax(g_copy.Copy(), i_depth - 1, alpha, beta, true, null)[1];
+        //     let validPlayerMoves = i_game.GetValidPlayerMoves();
+        //     //console.log(validPlayerMoves.length);
+        //     for (let validMove of validPlayerMoves) {
+        //         let g_copy = validMove[1].Copy();
+        //         let opponentMove = i_otherMove;
+        //         g_copy.MakeMove(validMove[0], opponentMove);
+        //         let new_score = this.Minimax(g_copy.Copy(), i_depth - 1, alpha, beta, true, validMove[0])[1];
 
-                if (new_score < value) {
-                    value = new_score;
-                    move = validMove[0];
-                }
+        //         if (new_score < value) {
+        //             value = new_score;
+        //             move = validMove[0];
+        //         }
 
-                beta = Math.min(beta, value);
+        //         beta = Math.min(beta, value);
 
-                if (alpha >= beta) {
-                    break;
-                }
-            }
+        //         if (alpha >= beta) {
+        //             break;
+        //         }
+        //     }
 
-            return [move, value];
-        }
+        //     return [move, value];
+        // }
     }
 }

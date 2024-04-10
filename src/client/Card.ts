@@ -1,3 +1,5 @@
+import { cardList } from "./Player";
+
 export class Card {
     public name: string = "";
     public energy: number = 0;
@@ -7,5 +9,9 @@ export class Card {
         this.name = i_name;
         this.energy = i_energy;
         this.power = i_power;
+    }
+
+    public ToHash() {
+        return this.name;
     }
 }

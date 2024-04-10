@@ -17,11 +17,13 @@ const doGame = (i_game) => {
     
     let playerMove = validPlayerMoves[idx];
     
-    //console.log(playerMove);
-    
-    let AIMove = i_game.AIMove(playerMove, 2);
-    
-    //console.log(AIMove);
+    let AIMove = i_game.Copy().AIMove(playerMove, Math.min(2, 6 - i_game.round));
+    let validAIMoves = i_game.Copy().GetValidAIMoves();
+    console.log(validAIMoves);
+    console.log(playerMove);
+    console.log("AI MOVE: ");
+    console.log(AIMove);
+    console.log(i_game.Copy());
     i_game.MakeMove(playerMove, AIMove);
 
     console.log(i_game);
