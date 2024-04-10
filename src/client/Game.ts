@@ -201,8 +201,8 @@ export class Game {
         }
     }
 
-    public AIMove(i_playerMove: Move, i_depth: number): Move {
-        return this.Minimax(this.Copy(), i_depth, Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY, true, i_playerMove)[0];
+    public AIMove(i_depth: number): Move {
+        return this.Minimax(this.Copy(), i_depth, Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY)[0];
     }
 
     public GetValidPlayerMoves(): Array<[Move, Game]> {
@@ -274,6 +274,15 @@ export class Game {
         // get all possible combinations of cards played into columns
         // remove all combinations that have invalid energy counts
 
+        let tempHandRange = [...Array(this.AI.hand.length).keys()];
+        let handRange = [];
+
+        for (let n of tempHandRange) {
+            if (this.AI.hand[n].energy <= this.round) {
+                handRange.push(n);
+            }
+        }
+
         let possibleColumns = [];
 
         for (let i = 0; i < this.columns.length; i++) {
@@ -286,10 +295,10 @@ export class Game {
 
         let permDict = {};
         let groupedPerms = [];
-        for (let j = 0; j < this.AI.hand.length; j++) {
+        for (let j = 0; j < handRange.length; j++) {
             groupedPerms.push([]);
         }
-        for (let j = 1; j <= this.AI.hand.length; j++) {
+        for (let j = 1; j <= handRange.length; j++) {
             for (let i of permutations(possibleColumns, j)) {
                 let stringRepresentation = "";
                 for (let digit of i) {
@@ -303,23 +312,29 @@ export class Game {
             groupedPerms[idx.length-1].push(permDict[idx]);
         }
 
-        //console.log(groupedPerms);
+        // console.log("grouped perms: ");
+        // console.log(groupedPerms);
 
-        let handRange = [...Array(this.AI.hand.length).keys()];
+        
         
         let groupedHandCombos = []
-        for (let j = 0; j < this.AI.hand.length; j++) {
+        for (let j = 0; j < handRange.length; j++) {
             groupedHandCombos.push([]);
         }
-        let handCombos = combinations(handRange, 1, this.AI.hand.length);
+        let handCombos = combinations(handRange, 1, handRange.length);
+        // console.log("hand combos: ");
+        // console.log(handCombos);
         for (let arr of handCombos) {
+            if (arr.length === 0) continue;
             groupedHandCombos[arr.length-1].push(arr);
         }
-        //console.log(groupedHandCombos);
+
+        // console.log("grouped hand combos: ");
+        // console.log(groupedHandCombos);
 
         let allPotentialMoves = [];
 
-        for (let j = 0; j < this.AI.hand.length; j++) {
+        for (let j = 0; j < handRange.length; j++) {
             let possibleHands = groupedHandCombos[j];
             let possibleColumnOrders = groupedPerms[j];
 
@@ -335,6 +350,10 @@ export class Game {
                 }
             }
         }
+
+        // console.log("All potential moves: ");
+        // console.log(allPotentialMoves);
+
 
         for (let i = 0; i < allPotentialMoves.length; i++) {
             let move = allPotentialMoves[i];
@@ -373,7 +392,7 @@ export class Game {
         return result;
     }
 
-    public Minimax(i_game: Game, i_depth: number, i_alpha: number, i_beta: number, i_maximizingPlayer: boolean, i_otherMove: Move): [Move, number] {
+    public Minimax(i_game: Game, i_depth: number, i_alpha: number, i_beta: number): [Move, number] {
         console.log("minimaxCalled. depth: " + i_depth);
         if (i_depth === 0) {
             //console.log("round number: " + i_game.round);
@@ -383,42 +402,45 @@ export class Game {
         let alpha = i_alpha;
         let beta = i_beta;
 
-        if (i_maximizingPlayer) {
-            //console.log("got here2");
-            let value = Number.NEGATIVE_INFINITY;
-            let move = new Move();
-            let validAIMoves = i_game.GetValidAIMoves();
-            //console.log("validAIMoves: " + validAIMoves.length);
-            let i = 0;
-            for (let validMove of validAIMoves) {
-                //console.log("processed move "+ i);
-                let g_copy = i_game.Copy();
-                let validPlayerMoves = g_copy.GetValidPlayerMoves();
-                let j = 0;
-                //console.log("Valid player moves: " + validPlayerMoves.length);
-                for (let validPlayerMove of validPlayerMoves) {
-                    //console.log("processed inner move "+ j);
-                    let g_copy2 = validPlayerMove[1].Copy();
-                    let opponentMove = validPlayerMove[0];
-                    g_copy2.MakeMove(opponentMove, validMove);
-                    let new_score = this.Minimax(g_copy2, i_depth - 1, alpha, beta, true, validPlayerMove[0])[1];
-                    if (new_score > value) {
-                        value = new_score;
-                        move = validMove;
-                    }
-                    j++;
+        //console.log("got here2");
+        let value = Number.NEGATIVE_INFINITY;
+        let move = new Move();
+        let validAIMoves = i_game.GetValidAIMoves();
+        //console.log("validAIMoves: " + validAIMoves.length);
+        let i = 0;
+        for (let validMove of validAIMoves) {
+            //console.log("processed move "+ i);
+            let g_copy = i_game.Copy();
+            let validPlayerMoves = g_copy.GetValidPlayerMoves();
+            let j = 0;
+            //console.log("Valid player moves: " + validPlayerMoves.length);
+            for (let validPlayerMove of validPlayerMoves) {
+                //console.log("processed inner move "+ j);
+                let g_copy2 = validPlayerMove[1].Copy();
+                let opponentMove = validPlayerMove[0];
+                g_copy2.MakeMove(opponentMove, validMove);
+                let new_score = this.Minimax(g_copy2, i_depth - 1, alpha, beta)[1];
+                if (new_score > value) {
+                    value = new_score;
+                    move = validMove;
+                    alpha = Math.max(alpha, value);
+                } else if (new_score < value) {
+                    beta = Math.min(beta, value);
                 }
 
-                // alpha = Math.max(alpha, value);
-
-                // if (alpha >= i_beta) {
-                //     break;
-                // }
-
-                i++;
+                console.log("alpha: " + alpha);
+                console.log("beta: " + beta);
+                if (alpha >= beta) {
+                    break;
+                }
+                j++;
             }
-            return [move, value];
-        } 
+
+            
+
+            i++;
+        }
+        return [move, value];
         // else {
         //     //console.log("got here3");
         //     let value = Number.POSITIVE_INFINITY;
