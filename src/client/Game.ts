@@ -428,8 +428,8 @@ export class Game {
                     beta = Math.min(beta, value);
                 }
 
-                console.log("alpha: " + alpha);
-                console.log("beta: " + beta);
+                // console.log("alpha: " + alpha);
+                // console.log("beta: " + beta);
                 if (alpha >= beta) {
                     break;
                 }
