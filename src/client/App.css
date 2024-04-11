@@ -2,6 +2,7 @@
     position: absolute;
     left: 50%;
     top: 50%;
+    width: 1000px;
     height: 100%;
     transform: translate(-50%, -50%);
 }
@@ -44,7 +45,20 @@
     align-items: center;
 }
 
+.column-padding {
+    padding-left: 15px !important;
+}
+
 .card-width {
-    width: 100px !important;
+    width: 150px !important;
     height: 150px !important;
+}
+
+.power-energy {
+    padding-bottom: 15px;
+}
+
+.card-name {
+    text-align: center;
+    white-space: normal;
 }
