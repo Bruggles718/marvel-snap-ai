@@ -103,6 +103,8 @@ window.onload = () => {
 
     game.player.initHand();
     game.AI.initHand();
+
+    console.log(game.AI.hand);
     
     game.StartTurn();
 
@@ -171,7 +173,7 @@ function initializeButtons() {
     const endTurn = document.getElementById("End Turn") as HTMLButtonElement;
     endTurn.onclick = () => {
         // call AI's minimax to get their move
-        const AIMove = game.AIMove(1);
+        const AIMove = game.AIMove(4);
         // then it will call game.MakeMove(playerMove, AIMove)
         console.log("AI MOVE: ");
         console.log(AIMove);

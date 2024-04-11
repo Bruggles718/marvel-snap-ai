@@ -121,67 +121,72 @@ export class Game {
         this.AI.energy = this.round;
     }
 
-    public MakeMove(i_move: Move, i_AIMove: Move) {
-        let cardsToRemoveFromPlayerHand = [];
-        if (i_move) {
-            for (let idx in i_move.cardLocations) {
-                let col = i_move.cardLocations[idx];
-                this.columns[col].playerCards.push(this.player.hand[idx]);
-                try {
-                    this.player.energy -= this.player.hand[parseInt(idx)].energy;
-                } catch (e) {
-                    console.error("Hand idx " + idx + "was invalid!");
-                    console.error(this.player.hand);
+    public ApplySingleMove(i_move: Move, i_player: boolean) {
+        if (i_player) {
+            let cardsToRemoveFromPlayerHand = [];
+            if (i_move) {
+                for (let idx in i_move.cardLocations) {
+                    let col = i_move.cardLocations[idx];
+                    this.columns[col].playerCards.push(this.player.hand[idx]);
+                    try {
+                        this.player.energy -= this.player.hand[parseInt(idx)].energy;
+                    } catch (e) {
+                        console.error("Hand idx " + idx + "was invalid!");
+                        console.error(this.player.hand);
+                    }
+                    
+                    cardsToRemoveFromPlayerHand.push(parseInt(idx));
                 }
-                
-                cardsToRemoveFromPlayerHand.push(parseInt(idx));
-            }
-        }
+                for (let cardIdx of cardsToRemoveFromPlayerHand) {
+                    if (this.abilities[this.player.hand[cardIdx].name]) {
+                        this.abilities[this.player.hand[cardIdx].name](this);
+                    }
+                }
+                let newHand = [];
+                for (let i = 0; i < this.player.hand.length; i++) {
+                    if (cardsToRemoveFromPlayerHand.indexOf(i) === -1) {
+                        newHand.push(this.player.hand[i]);
+                    }
+                }
 
-        // AI does move
-        let aiMove = i_AIMove;
+                this.player.hand = [...newHand];
+            }
+        } else {
+            let aiMove = i_move;
         
-        let cardsToRemoveFromAiHand = [];
+            let cardsToRemoveFromAiHand = [];
 
-        if (aiMove) {
-            for (let idx in aiMove.cardLocations) {
-                let col = aiMove.cardLocations[idx];
-                this.columns[col].AICards.push(this.AI.hand[idx]);
-                this.AI.energy -= this.AI.hand[idx].energy;
-                cardsToRemoveFromAiHand.push(parseInt(idx));
+            if (aiMove) {
+                for (let idx in aiMove.cardLocations) {
+                    let col = aiMove.cardLocations[idx];
+                    this.columns[col].AICards.push(this.AI.hand[idx]);
+                    this.AI.energy -= this.AI.hand[idx].energy;
+                    cardsToRemoveFromAiHand.push(parseInt(idx));
+                }
             }
-        }
 
+            for (let cardIdx of cardsToRemoveFromAiHand) {
+                if (this.abilities[this.AI.hand[cardIdx].name]) {
+                    this.abilities[this.AI.hand[cardIdx].name](this);
+                }
+            }
+
+            let newAIHand = [];
+            for (let i = 0; i < this.AI.hand.length; i++) {
+                if (cardsToRemoveFromAiHand.indexOf(i) === -1) {
+                    newAIHand.push(this.AI.hand[i]);
+                }
+            }
+            this.AI.hand = [...newAIHand];
+        }
+    }
+
+    public MakeMove(i_move: Move, i_AIMove: Move) {
+        
+        this.ApplySingleMove(i_move, true);
+        this.ApplySingleMove(i_AIMove, false);
+        // AI does move
         // do column abilities
-
-        for (let cardIdx of cardsToRemoveFromPlayerHand) {
-            if (this.abilities[this.player.hand[cardIdx].name]) {
-                this.abilities[this.player.hand[cardIdx].name](this);
-            }
-        }
-
-        for (let cardIdx of cardsToRemoveFromAiHand) {
-            if (this.abilities[this.AI.hand[cardIdx].name]) {
-                this.abilities[this.AI.hand[cardIdx].name](this);
-            }
-        }
-
-        let newHand = [];
-        for (let i = 0; i < this.player.hand.length; i++) {
-            if (cardsToRemoveFromPlayerHand.indexOf(i) === -1) {
-                newHand.push(this.player.hand[i]);
-            }
-        }
-
-        this.player.hand = [...newHand];
-
-        let newAIHand = [];
-        for (let i = 0; i < this.AI.hand.length; i++) {
-            if (cardsToRemoveFromAiHand.indexOf(i) === -1) {
-                newAIHand.push(this.AI.hand[i]);
-            }
-        }
-        this.AI.hand = [...newAIHand];
 
         this.round++;
         this.player.energy = this.round;
@@ -202,7 +207,7 @@ export class Game {
     }
 
     public AIMove(i_depth: number): Move {
-        return this.Minimax(this.Copy(), i_depth, Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY)[0];
+        return this.Minimax(this.Copy(), i_depth, Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY, true)[0];
     }
 
     public GetValidPlayerMoves(): Array<[Move, Game]> {
@@ -384,22 +389,23 @@ export class Game {
 
     public ScorePosition() {
         let result = 0;
-
-        let columnsWon = 0;
-
+        let winningColumns = 0;
+        let losingColumns = 0;
         for (let column of this.columns) {
             let valueToAdd = (column.GetAIValue() - column.GetPlayerValue());
             result += valueToAdd;
             if (valueToAdd > 0) {
-                columnsWon++;
+                winningColumns++;
+            } else if (valueToAdd < 0){
+                losingColumns++;
             }
         }
 
-        return result * columnsWon;
+        return winningColumns - losingColumns;
     }
 
-    public Minimax(i_game: Game, i_depth: number, i_alpha: number, i_beta: number): [Move, number] {
-        console.log("minimaxCalled. depth: " + i_depth);
+    public Minimax(i_game: Game, i_depth: number, i_alpha: number, i_beta: number, i_maximizingPlayer: boolean): [Move, number] {
+        //console.log("minimaxCalled. depth: " + i_depth);
         if (i_depth === 0) {
             //console.log("round number: " + i_game.round);
             return [undefined, i_game.ScorePosition()];
@@ -409,45 +415,72 @@ export class Game {
         let beta = i_beta;
 
         //console.log("got here2");
-        let value = Number.NEGATIVE_INFINITY;
-        let move = new Move();
-        let validAIMoves = i_game.GetValidAIMoves();
 
-        if (validAIMoves.length < 2) {
-            if (validAIMoves[0] !== undefined) {
-                return [validAIMoves[0], i_game.ScorePosition()];
-            }
-            return [new Move(), i_game.ScorePosition()];
-        }
+        if (i_maximizingPlayer) {
+            let value = Number.NEGATIVE_INFINITY;
+            let move = new Move();
+            let validAIMoves = i_game.GetValidAIMoves();
 
-        let g_copy = i_game.Copy();
-        let validPlayerMoves = g_copy.GetValidPlayerMoves();
-        for (let validPlayerMove of validPlayerMoves) {
             for (let validMove of validAIMoves) {
                 //console.log("processed move "+ i);
-                let g_copy2 = validPlayerMove[1].Copy();
-                let opponentMove = validPlayerMove[0];
-                g_copy2.MakeMove(opponentMove, validMove);
-                if (g_copy2.ScorePosition() < value) {
-                    console.log("skipped");
-                    console.log("score: " + g_copy2.ScorePosition());
-                    console.log("value: " + value);
-                    console.log(g_copy2);
-                    continue;
-                }
-                let new_score = this.Minimax(g_copy2, i_depth - 1, alpha, beta)[1];
+                let g_copy = i_game.Copy();
+                g_copy.ApplySingleMove(validMove, false);
+                let new_score = this.Minimax(g_copy.Copy(), i_depth - 1, alpha, beta, false)[1];
                 if (new_score > value) {
                     value = new_score;
                     move = validMove;
                 }
+
+                alpha = Math.max(alpha, value);
+
+                if (alpha >= beta) {
+                    break;
+                }
                 //console.log("Valid player moves: " + validPlayerMoves.length);
             }
+
+            return [move, value];
+        } else {
+            let value = Number.POSITIVE_INFINITY;
+            let move = new Move();
+            let validPlayerMoves = i_game.GetValidPlayerMoves();
+
+            for (let validPlayerMove of validPlayerMoves) {
+                //console.log("processed move "+ i);
+                let g_copy = validPlayerMove[1].Copy();
+                g_copy.ApplySingleMove(validPlayerMove[0], true);
+                g_copy.round++;
+                g_copy.player.energy = g_copy.round;
+                g_copy.AI.energy = g_copy.round;
+                g_copy.player.drawNewCard();
+                g_copy.AI.drawNewCard();
+                let new_score = this.Minimax(g_copy.Copy(), i_depth - 1, alpha, beta, true)[1];
+                if (new_score < value) {
+                    value = new_score;
+                    move = validPlayerMove[0];
+                }
+
+                beta = Math.min(beta, value);
+
+                if (alpha >= beta) {
+                    break;
+                }
+                //console.log("Valid player moves: " + validPlayerMoves.length);
+            }
+            return [move, value];
+        }
+        
+
+        let g_copy = i_game.Copy();
+        let validPlayerMoves = g_copy.GetValidPlayerMoves();
+        for (let validPlayerMove of validPlayerMoves) {
+            
             //console.log("processed inner move "+ j);
            
         }
         //console.log("validAIMoves: " + validAIMoves.length);
         let i = 0;
-        return [move, value];
+        
         // else {
         //     //console.log("got here3");
         //     let value = Number.POSITIVE_INFINITY;
