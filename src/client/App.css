@@ -19,7 +19,6 @@
 }
 
 #PlayArea {
-    margin-top: 10px;
     margin-bottom: 10px;
 }
 
@@ -38,7 +37,7 @@
 }
 
 .deck-height {
-    height: 205px;
+    height: 165px;
 }
 .deck {
     display: flex;
@@ -51,7 +50,7 @@
 
 .card-width {
     width: 150px !important;
-    height: 150px !important;
+    height: 110px !important;
 }
 
 .power-energy {
@@ -61,4 +60,18 @@
 .card-name {
     text-align: center;
     white-space: normal;
+}
+
+.placed-card {
+    font-size: 8px;
+    padding-bottom: 0px;
+}
+
+.ai-column {
+    cursor: not-allowed;
+}
+
+.button-options {
+    height: auto;
+    min-height: 55px;
 }
