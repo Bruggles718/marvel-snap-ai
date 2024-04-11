@@ -50,8 +50,8 @@
 
 .card-width {
     width: 150px !important;
-    max-height: 140px !important;
-    min-height: 130px !important;
+    max-height: 130px !important;
+    min-height: 120px !important;
 }
 
 .power-energy {
