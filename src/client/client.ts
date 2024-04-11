@@ -5,7 +5,7 @@ import { getRandomInt } from "./Player";
 
 let currentSelectedHandIdx = undefined;
 
-let currentMoves: Move[] = [];
+let currentMoves: Move = new Move();
 
 console.log("client.js executing");
 
@@ -149,14 +149,14 @@ function selectedPlayerMove(button: HTMLButtonElement) {
 
     // Get the Move
 
-    const playerMove = new Move();
+    // define move
 
     // filter move
 
     // if move is valid, add it
     // else deselect the card/make visible to the player its deselected
 
-    currentMoves.push(playerMove);
+    // currentMoves.cardLocations
 
     // console.log(side, row, col);
      currentSelectedHandIdx = undefined;
