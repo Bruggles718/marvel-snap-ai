@@ -41,4 +41,10 @@ export class Column {
 
         return result;
     }
+
+    public ToHTML() {
+        return `<header>${this.GetAIValue()}</header>
+        <p>${this.ability}</p>
+        <header>${this.GetPlayerValue()}</header>`
+    }
 }

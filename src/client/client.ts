@@ -5,7 +5,7 @@ import { getRandomInt } from "./Player";
 
 let currentSelectedHandIdx = undefined;
 
-let currentMoves: Move = new Move();
+let currentMove: Move = new Move();
 
 console.log("client.js executing");
 
@@ -45,6 +45,59 @@ export function ScorePosition() {
 (window as any).doMove = doMove;
 (window as any).ScorePosition = ScorePosition;
 
+let energy = 0;
+
+function populateHandHTML() {
+    for (let i = 0; i < game.player.hand.length; i++) {
+        const cardElement = document.getElementById("Card-" + i.toString());
+        if (Object.keys(currentMove.cardLocations).indexOf(i.toString()) >= 0) {
+            cardElement.innerHTML = "";
+            continue;
+        }
+        const card = game.player.hand[i];
+        
+        cardElement.innerHTML = card.ToHTML();
+    }
+}
+
+function populateColumsHTML() {
+    let columnNames = ["Left", "Middle", "Right"];
+
+    for (let i = 0; i < game.columns.length; i++) {
+        let column = game.columns[i];
+
+        for (let j = 0; j < column.AICards.length; j++) {
+            const columnSpotElement = document.getElementById(columnNames[i] + " AI Index-" + j.toString());
+            columnSpotElement.innerHTML = column.AICards[j].ToHTML();
+        }
+    }
+
+    for (let i = 0; i < game.columns.length; i++) {
+        let column = game.columns[i];
+
+        for (let j = 0; j < column.playerCards.length; j++) {
+            const columnSpotElement = document.getElementById(columnNames[i] + " Player Index-" + j.toString());
+            columnSpotElement.innerHTML = column.playerCards[j].ToHTML();
+        }
+
+        if (column.playerCards.length >= 4) {
+            continue;
+        }
+
+        for (let idx in currentMove.cardLocations) {
+            const columnSpotElement = document.getElementById(columnNames[i] + " Player Index-" + column.playerCards.length.toString());
+            if (currentMove.cardLocations[idx] === i) {
+                columnSpotElement.innerHTML = game.player.hand[idx].ToHTML();
+            }
+        }
+    }
+
+    for (let i = 0; i < game.columns.length; i++) {
+        const columnLocation = document.getElementById(columnNames[i] + "Location");
+        columnLocation.innerHTML = game.columns[i].ToHTML();
+    }
+}
+
 window.onload = () => {
     
 
@@ -52,6 +105,11 @@ window.onload = () => {
     game.AI.initHand();
     
     game.StartTurn();
+
+    populateHandHTML();
+    populateColumsHTML();
+
+    energy = game.round;
     
     window.addEventListener("click", function(event) {
         if (event.target instanceof HTMLElement && (event.target instanceof HTMLButtonElement || event.target.parentNode instanceof HTMLButtonElement)) {
@@ -96,6 +154,10 @@ function initializeColumnIdxs() {
     }
 }
 
+function populateEnergy() {
+    document.getElementById("Energy").innerHTML = `<p>${energy}</p>`
+}
+
 // This can be how we set up the Retreat and En Turn buttons
 function initializeButtons() {
     
@@ -109,9 +171,25 @@ function initializeButtons() {
     const endTurn = document.getElementById("End Turn") as HTMLButtonElement;
     endTurn.onclick = () => {
         // call AI's minimax to get their move
+        const AIMove = game.AIMove(1);
         // then it will call game.MakeMove(playerMove, AIMove)
+        console.log("AI MOVE: ");
+        console.log(AIMove);
+
+        console.log(game.Copy());
+
+        game.MakeMove(currentMove, AIMove);
+
+        console.log(game);
+
+        currentMove = new Move();
         // Which should make the moves, change the turn, and add cards
         // the cards that are added will have to edit the html
+        populateHandHTML();
+        populateColumsHTML();
+
+        energy = game.round;
+        populateEnergy();
         // so we should probably do them here
         // As in we make the move return the cards it's adding as well as the new turn
     }
@@ -137,30 +215,27 @@ function selectedPlayerMove(button: HTMLButtonElement) {
     const side = button.id.split(" ")[0];
     const index = button.id.split(" ")[2].split("-")[1];
     const sideValue = side === "Left" ? 0 : side === "Middle" ? 1 : 2;
-    console.log((4 * sideValue) + parseInt(index));
-    // now we use these to get the card and column index that
-    // the player wishes to move the card to
+    console.log(sideValue);
 
-    // sides are left = 0 middle = 1 right = 2
-    // (4 * side) + col
+    const tempMove = new Move();
 
-    // We will define this as the current move intended by the player
-    // plus we will have to filter things out if the move is invalid
+    for (let idx in currentMove.cardLocations) {
+        tempMove.cardLocations[idx] = currentMove.cardLocations[idx];
+    }
 
-    // Get the Move
+    tempMove.cardLocations[currentSelectedHandIdx] = sideValue;
 
-    // define move
+    if (energy - tempMove.CalculateEnergyCost(game.player.hand) < 0) {
+        console.error("Invalid move!");
+        return;
+    }
 
-    // filter move
+    currentMove.cardLocations[currentSelectedHandIdx] = sideValue;
 
-    // if move is valid, add it
-    // else deselect the card/make visible to the player its deselected
+    currentSelectedHandIdx = undefined;
 
-    // currentMoves.cardLocations
-
-    // console.log(side, row, col);
-     currentSelectedHandIdx = undefined;
-
+    populateHandHTML();
+    populateColumsHTML();
 }
 
 // game.MakeMove(playerMove, AIMove);

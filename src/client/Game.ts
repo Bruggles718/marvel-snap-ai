@@ -385,11 +385,17 @@ export class Game {
     public ScorePosition() {
         let result = 0;
 
+        let columnsWon = 0;
+
         for (let column of this.columns) {
-            result += (column.GetAIValue() - column.GetPlayerValue());
+            let valueToAdd = (column.GetAIValue() - column.GetPlayerValue());
+            result += valueToAdd;
+            if (valueToAdd > 0) {
+                columnsWon++;
+            }
         }
 
-        return result;
+        return result * columnsWon;
     }
 
     public Minimax(i_game: Game, i_depth: number, i_alpha: number, i_beta: number): [Move, number] {
@@ -406,40 +412,41 @@ export class Game {
         let value = Number.NEGATIVE_INFINITY;
         let move = new Move();
         let validAIMoves = i_game.GetValidAIMoves();
-        //console.log("validAIMoves: " + validAIMoves.length);
-        let i = 0;
-        for (let validMove of validAIMoves) {
-            //console.log("processed move "+ i);
-            let g_copy = i_game.Copy();
-            let validPlayerMoves = g_copy.GetValidPlayerMoves();
-            let j = 0;
-            //console.log("Valid player moves: " + validPlayerMoves.length);
-            for (let validPlayerMove of validPlayerMoves) {
-                //console.log("processed inner move "+ j);
+
+        if (validAIMoves.length < 2) {
+            if (validAIMoves[0] !== undefined) {
+                return [validAIMoves[0], i_game.ScorePosition()];
+            }
+            return [new Move(), i_game.ScorePosition()];
+        }
+
+        let g_copy = i_game.Copy();
+        let validPlayerMoves = g_copy.GetValidPlayerMoves();
+        for (let validPlayerMove of validPlayerMoves) {
+            for (let validMove of validAIMoves) {
+                //console.log("processed move "+ i);
                 let g_copy2 = validPlayerMove[1].Copy();
                 let opponentMove = validPlayerMove[0];
                 g_copy2.MakeMove(opponentMove, validMove);
+                if (g_copy2.ScorePosition() < value) {
+                    console.log("skipped");
+                    console.log("score: " + g_copy2.ScorePosition());
+                    console.log("value: " + value);
+                    console.log(g_copy2);
+                    continue;
+                }
                 let new_score = this.Minimax(g_copy2, i_depth - 1, alpha, beta)[1];
                 if (new_score > value) {
                     value = new_score;
                     move = validMove;
-                    alpha = Math.max(alpha, value);
-                } else if (new_score < value) {
-                    beta = Math.min(beta, value);
                 }
-
-                // console.log("alpha: " + alpha);
-                // console.log("beta: " + beta);
-                if (alpha >= beta) {
-                    break;
-                }
-                j++;
+                //console.log("Valid player moves: " + validPlayerMoves.length);
             }
-
-            
-
-            i++;
+            //console.log("processed inner move "+ j);
+           
         }
+        //console.log("validAIMoves: " + validAIMoves.length);
+        let i = 0;
         return [move, value];
         // else {
         //     //console.log("got here3");

@@ -14,4 +14,12 @@ export class Card {
     public ToHash() {
         return this.name;
     }
+
+    public ToHTML() {
+        return `<div class="w3-row power-energy">
+                    <p class="w3-col w3-left-align s6">${this.energy}</p> 
+                    <p class="w3-col w3-right-align s6">${this.power}</p>
+                </div>
+                <p class="w3-row card-name">${this.name}</p>`;
+    }
 }
