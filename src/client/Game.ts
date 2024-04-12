@@ -206,10 +206,10 @@ export class Game {
     }
 
     public AIMove(i_depth: number): Move {
-        // let validAIMoves = this.GetValidAIMoves();
-        // let idx = getRandomInt(validAIMoves.length);
-        // return validAIMoves[idx];
-        return this.Minimax(this.Copy(), i_depth, Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY, true)[0];
+        let validAIMoves = this.GetValidAIMoves();
+        let idx = getRandomInt(validAIMoves.length);
+        return validAIMoves[idx];
+        // return this.Minimax(this.Copy(), i_depth, Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY, true)[0];
     }
 
     public GetValidPlayerMoves(): Array<[Move, Game]> {

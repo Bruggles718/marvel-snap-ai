@@ -10,75 +10,69 @@ export class IronheartAbility extends Ability {
     public pickedAICards: boolean = false;
 
     public apply(i_game: Game) {
+        let playerCardsToPickFrom = [];
+        let doPlayerIronheart = false;
+        let aiCardsToPickFrom = [];
+        let doAiIronheart = false;
+        for (let column of i_game.columns) {
+            for (let card of column.playerCards) {
+                if (card.name === "Ironheart") {
+                    doPlayerIronheart = true;
+                } else {
+                    playerCardsToPickFrom.push(card);
+                }
+            }
+
+            for (let card of column.AICards) {
+                if (card.name === "Ironheart") {
+                    doAiIronheart = true;
+                } else {
+                    aiCardsToPickFrom.push(card);
+                }
+            }
+        }
+        if (!this.pickedPlayerCards) {
+            let numCardsToPick = playerCardsToPickFrom.length;
+            for (let i = 0; i < Math.min(3, numCardsToPick); i++) {
+                let idx = getRandomInt(playerCardsToPickFrom.length);
+                playerCardsToPickFrom[idx].power += 2;
+                playerCardsToPickFrom.splice(idx, 1);
+            }
+            this.pickedPlayerCards = true;
+        }
+
         if (!this.pickedAICards) {
-            for (let column of i_game.columns) {
-                for (let card of column.AICards) {
-                    if (card.name === "Ironheart") {
-                        let colsToPickFrom = [];
-                        let numOfCardsToPick = 0;
-                        for (let i = 0; i < 3; i++) {
-                            if (i_game.columns[i].AICards.length > 0) {
-                                colsToPickFrom.push(i);
-                                // console.log("add ai column " + i);
-                                numOfCardsToPick = Math.min(3, numOfCardsToPick + i_game.columns[i].AICards.length);
-                            }
-                        } 
-
-                        for (let i = 0; i < numOfCardsToPick; i++) {
-
-                            let colIdx = getRandomInt(colsToPickFrom.length);
-                            let cardIdx = getRandomInt(i_game.columns[colsToPickFrom[colIdx]].AICards.length);
-                            i_game.columns[colIdx].AICards[cardIdx].power + 2;
-                        }
-                        this.pickedAICards = true;
-                    }
-                }
+            let numCardsToPick = aiCardsToPickFrom.length;
+            for (let i = 0; i < Math.min(3, numCardsToPick); i++) {
+                let idx = getRandomInt(aiCardsToPickFrom.length);
+                aiCardsToPickFrom[idx].power += 2;
+                aiCardsToPickFrom.splice(idx, 1);
             }
-            if (!this.pickedPlayerCards) {
-                for (let column of i_game.columns) {
-                    for (let card of column.playerCards) {
-                        if (card.name === "Ironheart") {
-                            let colsToPickFrom = [];
-                            let numOfCardsToPick = 0;
-                            for (let i = 0; i < 3; i++) {
-                                if (i_game.columns[i].playerCards.length > 0) {
-                                    colsToPickFrom.push(i);
-                                    // console.log("add player column " + i);
-                                    numOfCardsToPick = Math.min(3, numOfCardsToPick + i_game.columns[i].playerCards.length);
-                                }
-                            } 
-                
-                            for (let i = 0; i < 3; i++) {
-                                let colIdx = getRandomInt(3);
-                                let cardIdx = getRandomInt(i_game.columns[colIdx].playerCards.length);
-                                i_game.columns[colIdx].playerCards[cardIdx].power + 2;
-                            }
-                            this.pickedPlayerCards = true;
-                        }
-                    }
-                }
-            }
+            this.pickedAICards = true;
         }
     }
 }
 
 export class AntManAbility extends Ability {
-    public apply(i_game: Game) {
-        let newPower = 5;
+    public playerAbilityDone = false;
+    public aiAbliityDone = false;
 
+    public apply(i_game: Game) {
         for (let column of i_game.columns) {
             for (let card of column.playerCards) {
-                if (card.name === "Ant Man") {
+                if (card.name === "Ant Man" && !this.playerAbilityDone) {
                     if (column.playerCards.length >= 4) {
-                        card.power = newPower;
+                        card.power += 4;
+                        this.playerAbilityDone = true;
                     }
                 }
             }
 
             for (let card of column.AICards) {
-                if (card.name === "Ant Man") {
+                if (card.name === "Ant Man" && !this.aiAbliityDone) {
                     if (column.AICards.length >= 4) {
-                        card.power = newPower;
+                        card.power += 4;
+                        this.aiAbliityDone = true;
                     }
                 }
             }
