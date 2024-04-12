@@ -110,6 +110,7 @@ window.onload = () => {
 
     populateHandHTML();
     populateColumsHTML();
+    populateEnergy();
 
     energy = game.round;
     
