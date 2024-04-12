@@ -47,6 +47,8 @@ export const validAIMovesPerGame = {};
 
 export const hashToGame = {};
 
+export const scoreKeep = {};
+
 export class Game {
     public abilities: {[index: string]: Ability} = {};
     
@@ -204,10 +206,10 @@ export class Game {
     }
 
     public AIMove(i_depth: number): Move {
-        let validAIMoves = this.GetValidAIMoves();
-        let idx = getRandomInt(validAIMoves.length);
-        return validAIMoves[idx];
-        //return this.Minimax(this.Copy(), i_depth, Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY, true)[0];
+        // let validAIMoves = this.GetValidAIMoves();
+        // let idx = getRandomInt(validAIMoves.length);
+        // return validAIMoves[idx];
+        return this.Minimax(this.Copy(), i_depth, Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY, true)[0];
     }
 
     public GetValidPlayerMoves(): Array<[Move, Game]> {
@@ -411,6 +413,10 @@ export class Game {
             return [undefined, i_game.ScorePosition()];
         }
 
+        if (scoreKeep[i_game.ToHash()]) {
+            return scoreKeep[i_game.ToHash()];
+        }
+
         let alpha = i_alpha;
         let beta = i_beta;
 
@@ -438,6 +444,8 @@ export class Game {
                 }
                 //console.log("Valid player moves: " + validPlayerMoves.length);
             }
+
+            scoreKeep[i_game.ToHash()] = [move, value];
 
             return [move, value];
         } else {
@@ -467,6 +475,8 @@ export class Game {
                 }
                 //console.log("Valid player moves: " + validPlayerMoves.length);
             }
+            scoreKeep[i_game.ToHash()] = [move, value];
+
             return [move, value];
         }
         

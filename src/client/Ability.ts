@@ -19,7 +19,7 @@ export class IronheartAbility extends Ability {
                         for (let i = 0; i < 3; i++) {
                             if (i_game.columns[i].AICards.length > 0) {
                                 colsToPickFrom.push(i);
-                                console.log("add ai column " + i);
+                                // console.log("add ai column " + i);
                                 numOfCardsToPick = Math.min(3, numOfCardsToPick + i_game.columns[i].AICards.length);
                             }
                         } 
@@ -43,7 +43,7 @@ export class IronheartAbility extends Ability {
                             for (let i = 0; i < 3; i++) {
                                 if (i_game.columns[i].playerCards.length > 0) {
                                     colsToPickFrom.push(i);
-                                    console.log("add player column " + i);
+                                    // console.log("add player column " + i);
                                     numOfCardsToPick = Math.min(3, numOfCardsToPick + i_game.columns[i].playerCards.length);
                                 }
                             } 
