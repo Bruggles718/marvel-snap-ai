@@ -16,7 +16,7 @@ export class Card {
     }
 
     public ToHTML() {
-        return `<div class="w3-row power-energy">
+        return `<div class="w3-row power-energy placed-card">
                     <p class="w3-col w3-left-align s6">${this.energy}</p> 
                     <p class="w3-col w3-right-align s6">${this.power}</p>
                 </div>
