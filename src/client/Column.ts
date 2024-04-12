@@ -47,4 +47,21 @@ export class Column {
         <p>${this.ability}</p>
         <header>${this.GetPlayerValue()}</header>`
     }
+
+    public Copy() {
+        let result = new Column();
+        
+        for (let card of this.playerCards) {
+            result.playerCards.push(card.Copy());
+        }
+
+        for (let card of this.AICards) {
+            result.AICards.push(card.Copy());
+        }
+
+        result.revealed = this.revealed;
+        result.ability = this.ability;
+
+        return result;
+    }
 }

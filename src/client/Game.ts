@@ -3,6 +3,7 @@ import { Move } from "./Move";
 import { Player, cardList, getRandomInt } from "./Player";
 import { permutations, range } from "itertools"
 import combinations from "combinations"
+import { Ability, AntManAbility, IronheartAbility } from "./Ability";
 
 // const combinations = (arr, min = 1, max) => {
 //     const combination = (arr, depth) => {
@@ -47,7 +48,7 @@ export const validAIMovesPerGame = {};
 export const hashToGame = {};
 
 export class Game {
-    public abilities: {[index: string]: (i_game: Game) => any} = {};
+    public abilities: {[index: string]: Ability} = {};
     
     public player: Player = new Player();
     public AI: Player = new Player();
@@ -61,9 +62,8 @@ export class Game {
     ];
 
     constructor() {
-        this.abilities["wakanda"] = () => {
-            console.log("doing wakanda");
-        };
+        this.abilities["Ant Man"] = new AntManAbility();
+        this.abilities["Ironheart"] = new IronheartAbility();
     }
 
     public ToHash() {
@@ -92,24 +92,15 @@ export class Game {
 
     public Copy() {
         let result: Game = new Game();
-        result.player.deck = [...this.player.deck];
-        result.player.energy = this.player.energy;
-        result.player.hand = [...this.player.hand];
+        result.player = this.player.Copy();
 
-        result.AI.deck = [...this.AI.deck];
-        result.AI.energy = this.AI.energy;
-        result.AI.hand = [...this.AI.hand];
+        result.AI = this.AI.Copy();
 
         result.columns = []
 
         for (let i = 0; i < this.columns.length; i++) {
-            let col = new Column();
-            let thisCol = this.columns[i];
-            col.AICards = [...thisCol.AICards];
-            col.ability = thisCol.ability;
-            col.playerCards = [...thisCol.playerCards];
-            col.revealed = thisCol.revealed;
-            result.columns.push(col);
+            let col = this.columns[i];
+            result.columns.push(col.Copy());
         }
         
         result.round = this.round;
@@ -127,7 +118,7 @@ export class Game {
             if (i_move) {
                 for (let idx in i_move.cardLocations) {
                     let col = i_move.cardLocations[idx];
-                    this.columns[col].playerCards.push(this.player.hand[idx]);
+                    this.columns[col].playerCards.push(this.player.hand[idx].Copy());
                     try {
                         this.player.energy -= this.player.hand[parseInt(idx)].energy;
                     } catch (e) {
@@ -137,11 +128,15 @@ export class Game {
                     
                     cardsToRemoveFromPlayerHand.push(parseInt(idx));
                 }
-                for (let cardIdx of cardsToRemoveFromPlayerHand) {
-                    if (this.abilities[this.player.hand[cardIdx].name]) {
-                        this.abilities[this.player.hand[cardIdx].name](this);
+
+                for (let column of this.columns) {
+                    for (let card of column.playerCards) {
+                        if (this.abilities[card.name]) {
+                            this.abilities[card.name].apply(this);
+                        }
                     }
                 }
+
                 let newHand = [];
                 for (let i = 0; i < this.player.hand.length; i++) {
                     if (cardsToRemoveFromPlayerHand.indexOf(i) === -1) {
@@ -159,15 +154,17 @@ export class Game {
             if (aiMove) {
                 for (let idx in aiMove.cardLocations) {
                     let col = aiMove.cardLocations[idx];
-                    this.columns[col].AICards.push(this.AI.hand[idx]);
+                    this.columns[col].AICards.push(this.AI.hand[idx].Copy());
                     this.AI.energy -= this.AI.hand[idx].energy;
                     cardsToRemoveFromAiHand.push(parseInt(idx));
                 }
             }
 
-            for (let cardIdx of cardsToRemoveFromAiHand) {
-                if (this.abilities[this.AI.hand[cardIdx].name]) {
-                    this.abilities[this.AI.hand[cardIdx].name](this);
+            for (let column of this.columns) {
+                for (let card of column.AICards) {
+                    if (this.abilities[card.name]) {
+                        this.abilities[card.name].apply(this);
+                    }
                 }
             }
 
@@ -207,7 +204,10 @@ export class Game {
     }
 
     public AIMove(i_depth: number): Move {
-        return this.Minimax(this.Copy(), i_depth, Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY, true)[0];
+        let validAIMoves = this.GetValidAIMoves();
+        let idx = getRandomInt(validAIMoves.length);
+        return validAIMoves[idx];
+        //return this.Minimax(this.Copy(), i_depth, Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY, true)[0];
     }
 
     public GetValidPlayerMoves(): Array<[Move, Game]> {

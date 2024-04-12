@@ -16,7 +16,7 @@ export const cardList = [
 ]
 
 export function getRandomInt(max: number) {
-    return Math.floor(Math.random() * max);
+    return Math.floor(Math.random() * (max - 1));
 }
 
 export class Player {
@@ -44,5 +44,23 @@ export class Player {
         this.hand.push(this.deck.pop());
     }
 
+    public Copy() {
+        let result = new Player();
+
+        result.deck = [];
+        result.hand = []
+        
+        for (let card of this.deck) {
+            result.deck.push(card.Copy());
+        }
+
+        for (let card of this.hand) {
+            result.hand.push(card.Copy());
+        }
+
+        result.energy = this.energy;
+
+        return result;
+    }
     
 }

@@ -20,6 +20,10 @@ export class Card {
                     <p class="w3-col w3-left-align s6">${this.energy}</p> 
                     <p class="w3-col w3-right-align s6">${this.power}</p>
                 </div>
-                <p class="w3-row card-name">${this.name}</p>`;
+                <p class="w3-row card-name placed-card">${this.name}</p>`;
+    }
+
+    public Copy() {
+        return new Card(this.name, this.energy, this.power);
     }
 }
