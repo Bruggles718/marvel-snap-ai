@@ -34,8 +34,16 @@ export class Player {
         }
 
         this.deck = [...newDeck];
+
+        for (let i = 0; i < this.deck.length; i++) {
+            if (this.deck[i].name === "Quicksilver") {
+                this.hand.push(this.deck[i]);
+                this.deck.splice(i, 1);
+                break;
+            }
+        }
         
-        for (let i = 0; i < 4; i++) {
+        for (let i = 0; i < 3; i++) {
             this.hand.push(this.deck.pop());
         }
     }
