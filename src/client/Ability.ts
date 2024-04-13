@@ -277,3 +277,46 @@ export class CaptainAmericaAbility extends Ability {
     }
 }
 
+export class NamorAbility extends Ability {
+    public addedPlayer = false;
+    public removedPlayer = false;
+    public addedAI = false;
+    public removedAI = false;
+
+    public apply(i_game: Game) {
+        for (let column of i_game.columns) {
+            for (let card of column.playerCards) {
+                if (card.name === "Namor") {
+                    if (column.playerCards.length == 1) {
+                        if (!this.addedPlayer) {
+                            card.power += 5;
+                            this.addedPlayer = true;
+                        }
+                    } else {
+                        if (!this.removedPlayer) {
+                            card.power -= 5;
+                            this.removedPlayer = true;
+                        }
+                    }
+                }
+            }
+
+            for (let card of column.AICards) {
+                if (card.name === "Namor") {
+                    if (column.AICards.length == 1) {
+                        if (!this.addedAI) {
+                            card.power += 5;
+                            this.addedAI = true;
+                        }
+                    } else {
+                        if (!this.removedAI) {
+                            card.power -= 5;
+                            this.removedAI = true;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
