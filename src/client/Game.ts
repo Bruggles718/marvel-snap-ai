@@ -3,7 +3,7 @@ import { Move } from "./Move";
 import { Player, cardList, getRandomInt } from "./Player";
 import { permutations, range } from "itertools"
 import combinations from "combinations"
-import { Ability, AntManAbility, IronheartAbility, BlackPantherAbility, MedusaAbility, DazzlerAbility, GwenpoolAbility } from "./Ability";
+import { Ability, AntManAbility, IronheartAbility, BlackPantherAbility, MedusaAbility, DazzlerAbility, GwenpoolAbility, CaptainAmericaAbility } from "./Ability";
 
 // const combinations = (arr, min = 1, max) => {
 //     const combination = (arr, depth) => {
@@ -70,7 +70,7 @@ export class Game {
         this.abilities["Medusa"] = new MedusaAbility();
         this.abilities["Dazzler"] = new DazzlerAbility();
         this.abilities["Gwenpool"] = new GwenpoolAbility();
-        // this.abilities["Captain America"] = new CaptainAmericaAbility();
+        this.abilities["Captain America"] = new CaptainAmericaAbility();
     }
 
     public ToHash() {

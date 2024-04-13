@@ -239,31 +239,41 @@ export class GwenpoolAbility extends Ability {
     }
 }
 
-/*
+
 export class CaptainAmericaAbility extends Ability {
     public playerAbilityDone = false;
     public aiAbliityDone = false;
+    public aiCardsUpdated: string[] = ["Captain America"];
+    public playersCardUpdated: string[] = ["Captain America"];
+
 
     public apply(i_game: Game) {
+
         for (let column of i_game.columns) {
             for (let card of column.playerCards) {
-                if (card.name === "Captain America" && !this.playerAbilityDone) {
+                if (card.name === "Captain America") {
                     for (let card2 of column.playerCards) {
-                        if (card2.name !== "Captain America") card2.power += 1;
+                        console.log(this.playersCardUpdated);
+                        if (this.playersCardUpdated.indexOf(card2.name) == -1) {
+                            card2.power += 1;
+                            this.playersCardUpdated.push(card2.name);
+                        }
                     }
-                    this.playerAbilityDone = true;
                 }
             }
 
             for (let card of column.AICards) {
                 if (card.name === "Captain America" && !this.aiAbliityDone) {
                     for (let card2 of column.AICards) {
-                        if (card2.name !== "Captain America") card2.power += 1;
+                        if (this.aiCardsUpdated.indexOf(card2.name) == -1) {
+                            card2.power += 1;
+                            this.aiCardsUpdated.push(card2.name);
+                        }
                     }
-                    this.aiAbliityDone = true;
+                    
                 }
             }
         }
     }
-}*/
+}
 
