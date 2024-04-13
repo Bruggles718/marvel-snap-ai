@@ -174,7 +174,7 @@ function initializeButtons() {
     const endTurn = document.getElementById("End Turn") as HTMLButtonElement;
     endTurn.onclick = () => {
         // call AI's minimax to get their move
-        const AIMove = game.AIMove(4);
+        const AIMove = game.AIMove(2);
         // then it will call game.MakeMove(playerMove, AIMove)
         console.log("AI MOVE: ");
         console.log(AIMove);

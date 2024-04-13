@@ -108,8 +108,6 @@ export class BlackPantherAbility extends Ability {
     }
 }
 
-
-
 export class MedusaAbility extends Ability {
     public aiAbliityDone = false;
     public playerAbilityDone = false;
@@ -136,47 +134,6 @@ export class MedusaAbility extends Ability {
         }
     }
 }
-
-/*
-export class KlawAbility extends Ability {
-    public aiAbliityDone = false;
-    public playerAbilityDone = false;
-
-    public apply(i_game: Game) {
-        const columns = i_game.columns;
-        for (let i = 0 ; i < i_game.columns.length - 1; i++) {
-            if (!this.aiAbliityDone) {
-                for (let card of columns[i].AICards) {
-                    if (card.name === "Klaw") {
-                        columns[i + 1];
-                        this.aiAbliityDone = true;
-                    }
-                }
-            }
-        }
-        for (let column of i_game.columns) {
-            if (!this.aiAbliityDone) {
-                for (let card of column.AICards) {
-                    if (card.name === "Black Panther") {
-                        card.power *= 2;
-                        this.aiAbliityDone = true;
-                    }
-                }
-            }
-            
-
-            if (!this.playerAbilityDone) {
-                for (let card of column.playerCards) {
-                    if (card.name === "Black Panther") {
-                        card.power *= 2;
-                        this.aiAbliityDone = true;
-                    }
-                }
-            }
-        }
-    }
-}*/
-
 
 export class DazzlerAbility extends Ability {
     public aiColumnAdded: {[index: number]: boolean} = {0 : false, 1 : false, 2 : false};
@@ -293,7 +250,7 @@ export class NamorAbility extends Ability {
                             this.addedPlayer = true;
                         }
                     } else {
-                        if (!this.removedPlayer) {
+                        if (!this.removedPlayer && this.addedPlayer) {
                             card.power -= 5;
                             this.removedPlayer = true;
                         }
@@ -320,3 +277,107 @@ export class NamorAbility extends Ability {
     }
 }
 
+export class StarkTowerAbility extends Ability {
+    public aiCardsUpdated: string[] = [];
+    public playersCardUpdated: string[] = [];
+    public columnToApply: number = 0;
+
+
+    public apply(i_game: Game) {
+        console.log("Applying Stark Tower. Round: ", i_game.round, " Column: ", this.columnToApply);
+        if (i_game.round > 5) {
+            const column = i_game.columns[this.columnToApply];
+            console.log("Column revealed: ", column.revealed);
+            // Might not need this but we should have it
+            // if (!column.revealed) return;
+            console.log("About to check player cards");
+            for (let card of column.playerCards) {
+                console.log("Checking player card: ", card);
+                if (this.playersCardUpdated.indexOf(card.name) == -1) {
+                    card.power += 2;
+                    this.playersCardUpdated.push(card.name);
+                }
+            }                
+            
+            for (let card of column.AICards) {
+                if (this.aiCardsUpdated.indexOf(card.name) == -1) {
+                    card.power += 2;
+                    this.aiCardsUpdated.push(card.name);
+                }
+            }
+        }
+    }
+
+}
+
+export class XandarAbility extends Ability {
+    public playerAbilityDone = false;
+    public aiAbliityDone = false;
+    public aiCardsUpdated: string[] = [];
+    public playersCardUpdated: string[] = [];
+    public columnToApply: number = 0;
+
+
+    public apply(i_game: Game) {
+        const column = i_game.columns[this.columnToApply];
+        // if (!column.revealed) return;
+        
+        for (let card of column.playerCards) {
+            if (this.playersCardUpdated.indexOf(card.name) == -1) {
+                card.power += 1;
+                this.playersCardUpdated.push(card.name);
+            }
+        }
+
+        for (let card of column.AICards) {
+                if (this.aiCardsUpdated.indexOf(card.name) == -1) {
+                    card.power += 1;
+                    this.aiCardsUpdated.push(card.name);
+                }
+        }
+    }
+
+}
+
+export class AtlantisAbility extends Ability {
+    public addedPlayer = false;
+    public removedPlayer = false;
+    public addedAI = false;
+    public removedAI = false;
+    public columnToApply: number = 0;
+
+    public apply(i_game: Game) {
+        const column = i_game.columns[this.columnToApply];
+        // if (!column.revealed) return;
+        
+        for (let card of column.playerCards) {
+            if (column.playerCards.length == 1) {
+                if (!this.addedPlayer) {
+                    card.power += 5;
+                    this.addedPlayer = true;
+                }
+            } else {
+                if (!this.removedPlayer && this.addedPlayer) {
+                    card.power -= 5;
+                    this.removedPlayer = true;
+                }
+            }
+                
+        }
+
+        for (let card of column.AICards) {
+            if (column.AICards.length == 1) {
+                if (!this.addedAI) {
+                    card.power += 5;
+                    this.addedAI = true;
+                }
+            } else {
+                if (!this.removedAI && this.addedAI) {
+                    card.power -= 5;
+                    this.removedAI = true;
+                }
+            }    
+        }
+        
+    }
+}

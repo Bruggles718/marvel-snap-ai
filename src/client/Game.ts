@@ -3,7 +3,7 @@ import { Move } from "./Move";
 import { Player, cardList, getRandomInt } from "./Player";
 import { permutations, range } from "itertools"
 import combinations from "combinations"
-import { Ability, AntManAbility, IronheartAbility, BlackPantherAbility, MedusaAbility, DazzlerAbility, GwenpoolAbility, CaptainAmericaAbility, NamorAbility } from "./Ability";
+import { Ability, AntManAbility, IronheartAbility, BlackPantherAbility, MedusaAbility, DazzlerAbility, GwenpoolAbility, CaptainAmericaAbility, NamorAbility, StarkTowerAbility, XandarAbility, AtlantisAbility } from "./Ability";
 
 // const combinations = (arr, min = 1, max) => {
 //     const combination = (arr, depth) => {
@@ -72,6 +72,20 @@ export class Game {
         this.abilities["Gwenpool"] = new GwenpoolAbility();
         this.abilities["Captain America"] = new CaptainAmericaAbility();
         this.abilities["Namor"] = new NamorAbility();
+        this.columns[0].ability = "Stark Tower"
+        const starkTowerAbility = new StarkTowerAbility();
+        starkTowerAbility.columnToApply = 0;
+        this.abilities["Stark Tower"] = starkTowerAbility;
+
+        this.columns[2].ability = "Xandar";
+        const xandarAbility = new XandarAbility();
+        xandarAbility.columnToApply = 2;
+        this.abilities["Xandar"] = xandarAbility;
+
+        this.columns[1].ability = "Atlantis";
+        const atlantisAbility = new AtlantisAbility();
+        atlantisAbility.columnToApply = 1;
+        this.abilities["Atlantis"] = atlantisAbility;
     }
 
     public ToHash() {
@@ -192,6 +206,13 @@ export class Game {
         this.ApplySingleMove(i_AIMove, false);
         // AI does move
         // do column abilities
+        // still need to reveal locations as we go
+
+        for (let column of this.columns) {
+            if (column.ability && this.abilities[column.ability]) {
+                this.abilities[column.ability].apply(this);
+            }
+        }
 
         this.round++;
         this.player.energy = this.round;
