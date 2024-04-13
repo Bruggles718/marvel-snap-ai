@@ -65,7 +65,7 @@ export class Game {
 
     constructor() {
         this.abilities["Ant Man"] = new AntManAbility();
-        // this.abilities["Ironheart"] = new IronheartAbility();
+        this.abilities["Ironheart"] = new IronheartAbility();
         this.abilities["Black Panther"] = new BlackPantherAbility();
         this.abilities["Medusa"] = new MedusaAbility();
         this.abilities["Dazzler"] = new DazzlerAbility();

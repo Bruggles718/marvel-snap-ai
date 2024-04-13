@@ -31,7 +31,7 @@ export class IronheartAbility extends Ability {
                 }
             }
         }
-        if (!this.pickedPlayerCards) {
+        if (!this.pickedPlayerCards && doPlayerIronheart) {
             let numCardsToPick = playerCardsToPickFrom.length;
             for (let i = 0; i < Math.min(3, numCardsToPick); i++) {
                 let idx = getRandomInt(playerCardsToPickFrom.length);
@@ -41,7 +41,7 @@ export class IronheartAbility extends Ability {
             this.pickedPlayerCards = true;
         }
 
-        if (!this.pickedAICards) {
+        if (!this.pickedAICards && doAiIronheart) {
             let numCardsToPick = aiCardsToPickFrom.length;
             for (let i = 0; i < Math.min(3, numCardsToPick); i++) {
                 let idx = getRandomInt(aiCardsToPickFrom.length);
