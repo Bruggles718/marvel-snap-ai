@@ -1,5 +1,8 @@
 import { Card } from "./Card"
 
+/**
+ * List of cards we've added in that can be played
+ */
 export const cardList = [
     new Card("Medusa", 2, 2),
     new Card("Hulk", 6, 12),
@@ -15,16 +18,31 @@ export const cardList = [
     new Card("Cyclops", 3, 4)
 ]
 
+/**
+ * Returns a random integer between 0 and max (exclusive)
+ * @param max max number (exclusive) of the random int
+ * @returns 
+ */
 export function getRandomInt(max: number) {
     return Math.floor(Math.random() * (max - 1));
 }
 
+/**
+ * Represents a player of Marvel Snap
+ * Each player has their deck of cards to draw from, 
+ * their current energy, and the current hand they can play from
+ */
 export class Player {
     public deck: Array<Card> = [...cardList];
     public energy: number = 1;
 
     public hand: Array<Card> = [];
 
+    /**
+     * Initializes the player's hand
+     * Picks a Quicksilver card and 3 random cards from the deck
+     * and adds them to the player's hand
+     */
     public initHand() {
         let newDeck = [];
         for (let i = 0; i < 12; i++) {
@@ -35,6 +53,7 @@ export class Player {
 
         this.deck = [...newDeck];
 
+        // Make sure quicksilver is in the hand
         for (let i = 0; i < this.deck.length; i++) {
             if (this.deck[i].name === "Quicksilver") {
                 this.hand.push(this.deck[i]);
@@ -48,12 +67,20 @@ export class Player {
         }
     }
 
+    /**
+     * Draws a new card from the deck
+     * If the player has 7 cards, they cannot draw a new card
+     */
     public drawNewCard() {
         if (this.hand.length >= 7) 
             return;
         this.hand.push(this.deck.pop());
     }
 
+    /**
+     * Copy the current player
+     * @returns a copy of this player
+     */
     public Copy() {
         let result = new Player();
 

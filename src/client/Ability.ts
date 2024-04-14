@@ -1,10 +1,22 @@
 import { Game } from "./Game";
 import { getRandomInt } from "./Player";
 
+/**
+ * Ability class that all abilities will extend from
+ */
 export class Ability {
+    /**
+     * All abilities will have this apply method so that every turn we cann
+     * apply each active ability
+     * @param i_game the game to apply the ability to
+     */
     public apply(i_game: Game) {}
 }
 
+/**
+ * The ability for the IronHeart card
+ * IronHeart will add 2 power to 3 random cards of the owner
+ */
 export class IronheartAbility extends Ability {
     public pickedPlayerCards: boolean = false;
     public pickedAICards: boolean = false;
@@ -53,6 +65,10 @@ export class IronheartAbility extends Ability {
     }
 }
 
+/**
+ * The ability for the AntMan card
+ * If the column is full, AntMan will add 4 power to itself on reveal
+ */
 export class AntManAbility extends Ability {
     public playerAbilityDone = false;
     public aiAbliityDone = false;
@@ -80,6 +96,10 @@ export class AntManAbility extends Ability {
     }
 }
 
+/**
+ * The ability for the Black Panther card
+ * Black Panther will double the power of itself once on reveal
+ */
 export class BlackPantherAbility extends Ability {
     public aiAbliityDone = false;
     public playerAbilityDone = false;
@@ -108,6 +128,10 @@ export class BlackPantherAbility extends Ability {
     }
 }
 
+/**
+ * The ability for the Medusa card
+ * Medusa will add 3 power to itself if it is in the middle column on reveal
+ */
 export class MedusaAbility extends Ability {
     public aiAbliityDone = false;
     public playerAbilityDone = false;
@@ -135,6 +159,10 @@ export class MedusaAbility extends Ability {
     }
 }
 
+/**
+ * The ability for the Dazzler card
+ * The Dazzler will add 2 power to itself for each full column
+ */
 export class DazzlerAbility extends Ability {
     public aiColumnAdded: {[index: number]: boolean} = {0 : false, 1 : false, 2 : false};
     public playerColumnAdded: {[index: number]: boolean} = {0 : false, 1 : false, 2 : false};
@@ -173,6 +201,10 @@ export class DazzlerAbility extends Ability {
     }
 }
 
+/**
+ * The ability for the Gwenpool card
+ * Gwenpool will double the power of itself on reveal
+ */
 export class GwenpoolAbility extends Ability {
     public playerAbilityDone = false;
     public aiAbliityDone = false;
@@ -196,7 +228,10 @@ export class GwenpoolAbility extends Ability {
     }
 }
 
-
+/**
+ * The ability for the Captain America card
+ * Captain America will add 1 power to all other cards in the column 
+ */
 export class CaptainAmericaAbility extends Ability {
     public playerAbilityDone = false;
     public aiAbliityDone = false;
@@ -234,6 +269,10 @@ export class CaptainAmericaAbility extends Ability {
     }
 }
 
+/**
+ * The ability for the Namor card
+ * Namor will add 5 power to itself if it is the only card in the column
+ */
 export class NamorAbility extends Ability {
     public addedPlayer = false;
     public removedPlayer = false;
@@ -276,7 +315,10 @@ export class NamorAbility extends Ability {
         }
     }
 }
-
+/**
+ * The ability for the Stark Tower column
+ * Stark Tower will add 2 power to all cards in the column after turn 5
+ */
 export class StarkTowerAbility extends Ability {
     public aiCardsUpdated: string[] = [];
     public playersCardUpdated: string[] = [];
@@ -305,6 +347,10 @@ export class StarkTowerAbility extends Ability {
 
 }
 
+/**
+ * The ability for the Xandar column
+ * Xandar will add 1 power to all cards in the column
+ */
 export class XandarAbility extends Ability {
     public playerAbilityDone = false;
     public aiAbliityDone = false;
@@ -334,6 +380,11 @@ export class XandarAbility extends Ability {
 
 }
 
+/**
+ * The ability for the Atlantis column
+ * Atlantis will add 5 power to the card in the column 
+ * if it is the only card in the column
+ */
 export class AtlantisAbility extends Ability {
     public addedPlayer = false;
     public removedPlayer = false;

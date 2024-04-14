@@ -5,50 +5,22 @@ import { permutations, range } from "itertools"
 import combinations from "combinations"
 import { Ability, AntManAbility, IronheartAbility, BlackPantherAbility, MedusaAbility, DazzlerAbility, GwenpoolAbility, CaptainAmericaAbility, NamorAbility, StarkTowerAbility, XandarAbility, AtlantisAbility } from "./Ability";
 
-// const combinations = (arr, min = 1, max) => {
-//     const combination = (arr, depth) => {
-//       if (depth === 1) {
-//         console.log("arr terminal: " + JSON.stringify(arr));
-//         return arr;
-//       } else {
-//         const result = combination(arr, depth - 1).flatMap((currentArr) =>
-//           arr.map((currentItem) => [...currentArr, currentItem])
-//         );
-//         console.log("result" + JSON.stringify(result));
-//         console.log("arr" + JSON.stringify(arr));
-//         return [...arr, ...result];
-//       }
-//     };
-  
-//     return combination(arr, max).filter((val) => val.length >= min);
-//   };
-
-//   var permutations = function(values) {
-//     var result = [];
-//     permute(values, []);
-//     return result;
-//   };
-
-//   var permute = function(values, prefix) {
-//     let result = []
-//     if (values.length === 0) {
-//       result.push(prefix);
-//     } else {
-//       for (var i = 0; i < values.length; i++) {
-//         var newValues = values.slice();
-//         var value = newValues.splice(i, 1);
-//         permute(newValues, prefix.concat(value));
-//       }
-//     }
-//   };
-
+// These 2 are a form of memoization
+// so that we don't have to recalculate the same moves over and over
 export const validPlayerMovesPerGame = {};
 export const validAIMovesPerGame = {};
 
-export const hashToGame = {};
-
+// Another form of memoization, so we can keep the scores of the games
 export const scoreKeep = {};
 
+/**
+ * Represents a game of Marvel Snap
+ * We have our list of abilities with the key being the name of it
+ * We have our player and AI
+ * We have our round number which starts at 1 and goes up to 6
+ * And our energy will be the same as the round number
+ * And we have our columns which are our left, middle, and right locations
+ */
 export class Game {
     public abilities: {[index: string]: Ability} = {};
     
@@ -88,6 +60,10 @@ export class Game {
         this.abilities["Atlantis"] = atlantisAbility;
     }
 
+    /**
+     * Create a custom hash code for this current game
+     * @returns hash for this game
+     */
     public ToHash() {
         let result = "";
         const iDefault = 2;
@@ -112,6 +88,10 @@ export class Game {
         return result;
     }
 
+    /**
+     * Makes a copy of the current game
+     * @returns a copy of this game
+     */
     public Copy() {
         let result: Game = new Game();
         result.player = this.player.Copy();
@@ -129,11 +109,21 @@ export class Game {
         return result;
     }
 
+    /**
+     * Start the turn by setting the energy of 
+     * the player and AI to the round number
+     */
     public StartTurn() {
         this.player.energy = this.round;
         this.AI.energy = this.round;
     }
 
+    /**
+     * Used for minimax but this will apply a single move by either
+     * the player or the AI (which is determined by i_player)
+     * @param i_move The move to apply
+     * @param i_player true if the player and false if the AI
+     */
     public ApplySingleMove(i_move: Move, i_player: boolean) {
         if (i_player) {
             let cardsToRemoveFromPlayerHand = [];
@@ -200,13 +190,18 @@ export class Game {
         }
     }
 
+    /**
+     * When we have both the player an ai move's we can apply
+     * them to the game. Then we will reveal the columns and apply
+     * both location abilities as well as card abilities. After every move
+     * we will increment the round number and update the energy of the players
+     * @param i_move the player's move
+     * @param i_AIMove the ai's move
+     */
     public MakeMove(i_move: Move, i_AIMove: Move) {
         
         this.ApplySingleMove(i_move, true);
         this.ApplySingleMove(i_AIMove, false);
-        // AI does move
-        // do column abilities
-        // still need to reveal locations as we go
 
         for (let column of this.columns) {
             if (!column.revealed) {
@@ -255,6 +250,9 @@ export class Game {
         this.AI.drawNewCard();
     }
 
+    /**
+     * For the game, swap the player and the AI representations
+     */
     public SwapPlayers() {
         let copiedGame = this.Copy();
 
@@ -266,16 +264,24 @@ export class Game {
         }
     }
 
+    /**
+     * Make a move for our ai using minimax
+     * @param i_depth the depth of the minimax algorithm
+     * @returns the chosen move
+     */
     public AIMove(i_depth: number): Move {
-        let validAIMoves = this.GetValidAIMoves();
-        let idx = getRandomInt(validAIMoves.length);
-        return validAIMoves[idx];
-        // return this.Minimax(this.Copy(), i_depth, Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY, true)[0];
+        //let validAIMoves = this.GetValidAIMoves();
+        //let idx = getRandomInt(validAIMoves.length);
+        //return validAIMoves[idx];
+        return this.Minimax(this.Copy(), i_depth, Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY, true)[0];
     }
 
+    /**
+     * For minimax, we need to get all the valid moves for the player
+     * @returns all the valid moves for the player for each game
+     */
     public GetValidPlayerMoves(): Array<[Move, Game]> {
         if (validPlayerMovesPerGame[this.ToHash()]) {
-            //console.log("found player moves");
             return validPlayerMovesPerGame[this.ToHash()];
         }
 
@@ -295,14 +301,10 @@ export class Game {
             }
         }
 
-        //console.log(cardsNotPlayed);
-
         let copiedBoard = this.Copy();
         let handLength = copiedBoard.player.hand.length;
         // cardsNotPlayed.length ^ handLength
         let possibleHands = combinations(cardsNotPlayed, handLength, handLength);
-
-        //console.log(possibleHands);
 
         let result = [];
         result.push([new Move(), this.Copy()])
@@ -324,16 +326,12 @@ export class Game {
         return result;
     }
 
+    /**
+     * Gets all the valid moves for the AI
+     * @returns the valid moves for the AI
+     */
     public GetValidAIMoves(): Array<Move> {
         if (validAIMovesPerGame[this.ToHash()]) {
-            //console.log("found ai moves");
-            //console.log(validAIMovesPerGame);
-            // if (hashToGame[this.ToHash()]) {
-            //     console.log("game found: ");
-            //     console.log(hashToGame[this.ToHash()]);
-            //     console.log("this game: ");
-            //     console.log(this);
-            // }
             return validAIMovesPerGame[this.ToHash()];
         }
 
@@ -419,9 +417,6 @@ export class Game {
             }
         }
 
-        // console.log("All potential moves: ");
-        // console.log(allPotentialMoves);
-
 
         for (let i = 0; i < allPotentialMoves.length; i++) {
             let move = allPotentialMoves[i];
@@ -432,24 +427,15 @@ export class Game {
         }
 
         validAIMovesPerGame[this.ToHash()] = result;
-        hashToGame[this.ToHash()] = this;
 
         return result;
-
-
-        // let game = this.Copy();
-        // for (let i = 0; i < game.AI.hand.length; i++) {
-        //     for (let j = 0; j < game.columns.length; j++) {
-        //         if (game.columns[j].AICards.length < 4) {
-        //             let move = new Move();
-        //             move.cardLocations[i] = j;
-        //             result.push(move);
-        //         }
-        //     }
-        // }
-        // return result;
     }
 
+    /**
+     * Given a game, return the ai score's
+     * based on the columns it is winning
+     * @returns 
+     */
     public ScorePosition() {
         let result = 0;
         let winningColumns = 0;
@@ -467,10 +453,17 @@ export class Game {
         return winningColumns - losingColumns;
     }
 
+    /**
+     * Minimax algorithm to determine the best move using alpha beta prunning
+     * @param i_game the game being processed 
+     * @param i_depth the depth to calculate
+     * @param i_alpha alpha value which is the best value so far for the AI
+     * @param i_beta beta value which is the best value so far for the player
+     * @param i_maximizingPlayer the player evaluated for, true for AI, false for player
+     * @returns the move and its score
+     */
     public Minimax(i_game: Game, i_depth: number, i_alpha: number, i_beta: number, i_maximizingPlayer: boolean): [Move, number] {
-        //console.log("minimaxCalled. depth: " + i_depth);
         if (i_depth === 0) {
-            //console.log("round number: " + i_game.round);
             return [undefined, i_game.ScorePosition()];
         }
 
@@ -480,8 +473,6 @@ export class Game {
 
         let alpha = i_alpha;
         let beta = i_beta;
-
-        //console.log("got here2");
 
         if (i_maximizingPlayer) {
             let value = Number.NEGATIVE_INFINITY;
@@ -547,50 +538,10 @@ export class Game {
                 if (alpha >= beta) {
                     break;
                 }
-                //console.log("Valid player moves: " + validPlayerMoves.length);
             }
             scoreKeep[i_game.ToHash()] = [move, value];
 
             return [move, value];
         }
-        
-
-        let g_copy = i_game.Copy();
-        let validPlayerMoves = g_copy.GetValidPlayerMoves();
-        for (let validPlayerMove of validPlayerMoves) {
-            
-            //console.log("processed inner move "+ j);
-           
-        }
-        //console.log("validAIMoves: " + validAIMoves.length);
-        let i = 0;
-        
-        // else {
-        //     //console.log("got here3");
-        //     let value = Number.POSITIVE_INFINITY;
-        //     let move = new Move();
-
-        //     let validPlayerMoves = i_game.GetValidPlayerMoves();
-        //     //console.log(validPlayerMoves.length);
-        //     for (let validMove of validPlayerMoves) {
-        //         let g_copy = validMove[1].Copy();
-        //         let opponentMove = i_otherMove;
-        //         g_copy.MakeMove(validMove[0], opponentMove);
-        //         let new_score = this.Minimax(g_copy.Copy(), i_depth - 1, alpha, beta, true, validMove[0])[1];
-
-        //         if (new_score < value) {
-        //             value = new_score;
-        //             move = validMove[0];
-        //         }
-
-        //         beta = Math.min(beta, value);
-
-        //         if (alpha >= beta) {
-        //             break;
-        //         }
-        //     }
-
-        //     return [move, value];
-        // }
     }
 }

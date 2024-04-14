@@ -3,8 +3,10 @@ import { Game } from "./Game";
 import { Move } from "./Move";
 import { getRandomInt } from "./Player";
 
+// Current card player is attempting to move
 let currentSelectedHandIdx = undefined;
 
+// Current move for this turn
 let currentMove: Move = new Move();
 
 console.log("client.js executing");
@@ -116,7 +118,7 @@ window.onload = () => {
     energy = game.round;
 
     populateEnergy();
-    
+
     window.addEventListener("click", function(event) {
         if (event.target instanceof HTMLElement && (event.target instanceof HTMLButtonElement || event.target.parentNode instanceof HTMLButtonElement)) {
             return;
