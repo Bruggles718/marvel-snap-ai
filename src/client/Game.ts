@@ -241,6 +241,8 @@ export class Game {
             return;
         }
         this.round++;
+        const turnCount = document.getElementById("End Turn");
+        turnCount.textContent = "End Turn: " + this.round + "/6";
         this.player.energy = this.round;
         this.AI.energy = this.round;
         this.player.drawNewCard();
