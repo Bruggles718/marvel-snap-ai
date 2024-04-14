@@ -221,7 +221,11 @@ export class Game {
                 this.abilities[column.ability].apply(this);
             }
         }
-
+        if (this.round === 6) {
+            const overlay = document.getElementById("overlay");
+            overlay.style.display = "block";
+            return;
+        }
         this.round++;
         this.player.energy = this.round;
         this.AI.energy = this.round;
@@ -492,6 +496,19 @@ export class Game {
                 //console.log("processed move "+ i);
                 let g_copy = validPlayerMove[1].Copy();
                 g_copy.ApplySingleMove(validPlayerMove[0], true);
+                for (let column of g_copy.columns) {
+                    if (!column.revealed) {
+                        column.revealed = true;
+                        break;
+                    }
+                }
+        
+        
+                for (let column of g_copy.columns) {
+                    if (column.ability && g_copy.abilities[column.ability]) {
+                        g_copy.abilities[column.ability].apply(g_copy);
+                    }
+                }
                 g_copy.round++;
                 g_copy.player.energy = g_copy.round;
                 g_copy.AI.energy = g_copy.round;
