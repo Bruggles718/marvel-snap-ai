@@ -378,9 +378,6 @@ export class Game {
             groupedPerms[idx.length-1].push(permDict[idx]);
         }
 
-        // console.log("grouped perms: ");
-        // console.log(groupedPerms);
-
         
         
         let groupedHandCombos = []
@@ -388,15 +385,10 @@ export class Game {
             groupedHandCombos.push([]);
         }
         let handCombos = combinations(handRange, 1, handRange.length);
-        // console.log("hand combos: ");
-        // console.log(handCombos);
         for (let arr of handCombos) {
             if (arr.length === 0) continue;
             groupedHandCombos[arr.length-1].push(arr);
         }
-
-        // console.log("grouped hand combos: ");
-        // console.log(groupedHandCombos);
 
         let allPotentialMoves = [];
 
@@ -480,7 +472,6 @@ export class Game {
             let validAIMoves = i_game.GetValidAIMoves();
 
             for (let validMove of validAIMoves) {
-                //console.log("processed move "+ i);
                 let g_copy = i_game.Copy();
                 g_copy.ApplySingleMove(validMove, false);
                 let new_score = this.Minimax(g_copy.Copy(), i_depth - 1, alpha, beta, false)[1];
@@ -494,7 +485,6 @@ export class Game {
                 if (alpha >= beta) {
                     break;
                 }
-                //console.log("Valid player moves: " + validPlayerMoves.length);
             }
 
             scoreKeep[i_game.ToHash()] = [move, value];
@@ -506,7 +496,6 @@ export class Game {
             let validPlayerMoves = i_game.GetValidPlayerMoves();
 
             for (let validPlayerMove of validPlayerMoves) {
-                //console.log("processed move "+ i);
                 let g_copy = validPlayerMove[1].Copy();
                 g_copy.ApplySingleMove(validPlayerMove[0], true);
                 for (let column of g_copy.columns) {

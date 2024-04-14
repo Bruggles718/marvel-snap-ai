@@ -245,7 +245,6 @@ export class CaptainAmericaAbility extends Ability {
             for (let card of column.playerCards) {
                 if (card.name === "Captain America") {
                     for (let card2 of column.playerCards) {
-                        console.log(this.playersCardUpdated);
                         if (this.playersCardUpdated.indexOf(card2.name) == -1) {
                             card2.power += 1;
                             this.playersCardUpdated.push(card2.name);
