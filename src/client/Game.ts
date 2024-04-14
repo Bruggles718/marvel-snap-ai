@@ -209,6 +209,14 @@ export class Game {
         // still need to reveal locations as we go
 
         for (let column of this.columns) {
+            if (!column.revealed) {
+                column.revealed = true;
+                break;
+            }
+        }
+
+
+        for (let column of this.columns) {
             if (column.ability && this.abilities[column.ability]) {
                 this.abilities[column.ability].apply(this);
             }

@@ -44,7 +44,7 @@ export class Column {
 
     public ToHTML() {
         return `<header>${this.GetAIValue()}</header>
-        <p>${this.ability}</p>
+        <p>${this.revealed ? this.ability : ""}</p>
         <header>${this.GetPlayerValue()}</header>`
     }
 

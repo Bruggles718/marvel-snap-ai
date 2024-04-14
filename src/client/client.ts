@@ -104,6 +104,8 @@ window.onload = () => {
     game.player.initHand();
     game.AI.initHand();
 
+    game.columns[0].revealed = true;
+
     console.log(game.AI.hand);
     
     game.StartTurn();

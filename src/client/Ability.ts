@@ -289,7 +289,7 @@ export class StarkTowerAbility extends Ability {
             const column = i_game.columns[this.columnToApply];
             console.log("Column revealed: ", column.revealed);
             // Might not need this but we should have it
-            // if (!column.revealed) return;
+            if (!column.revealed) return;
             console.log("About to check player cards");
             for (let card of column.playerCards) {
                 console.log("Checking player card: ", card);
@@ -320,7 +320,7 @@ export class XandarAbility extends Ability {
 
     public apply(i_game: Game) {
         const column = i_game.columns[this.columnToApply];
-        // if (!column.revealed) return;
+        if (!column.revealed) return;
         
         for (let card of column.playerCards) {
             if (this.playersCardUpdated.indexOf(card.name) == -1) {
@@ -348,7 +348,7 @@ export class AtlantisAbility extends Ability {
 
     public apply(i_game: Game) {
         const column = i_game.columns[this.columnToApply];
-        // if (!column.revealed) return;
+        if (!column.revealed) return;
         
         for (let card of column.playerCards) {
             if (column.playerCards.length == 1) {
