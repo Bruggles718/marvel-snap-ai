@@ -224,14 +224,17 @@ export class Game {
         if (this.round === 6) {
             const overlay = document.getElementById("overlay");
             overlay.style.display = "block";
-            let playerValue = 0;
-            let aiValue = 0;
+            let playerWins = 0;
+            let aiWins = 0;
             for (let column of this.columns) {
-                playerValue += column.GetPlayerValue();
-                aiValue += column.GetAIValue();
+                if (column.GetPlayerValue() > column.GetAIValue()) {
+                    playerWins++;
+                } else {
+                    aiWins++;
+                }
             }
             const gameOverMessage = document.getElementById("Game-Over-Message");
-            if (playerValue > aiValue) {
+            if (playerWins > aiWins) {
                 gameOverMessage.textContent = "You win!";
                 gameOverMessage.classList.add("player-win");
             } else {
