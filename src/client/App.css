@@ -77,24 +77,52 @@
     min-height: 55px;
 }
 
+.player-win {
+    background-image: linear-gradient(to right, #ff3399, #990099);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.ai-win {
+    background-image: linear-gradient(to right, #2c5f2d, #97bc62);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
 #overlay {
-    position: absolute; /* Sit on top of the page content */
-    width: 100%; /* Full width (cover the whole page) */
-    height: 100%; /* Full height (cover the whole page) */
+    position: absolute;
     display: none;
+    width: 100%; 
+    height: 100%; 
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(0,0,0,0.5); /* Black background with opacity */
-    z-index: 5; /* Specify a stack order in case you're using a different order for other elements */
+    background-color: rgba(0,0,0,0.5);
+    z-index: 5;
 }
 
 #word-overlay {
     position: absolute;
-    top: 50%;
+    top: 40%;
     left: 50%;
-    font-size: 20px;
-    color: rgb(0, 255, 0);
+    font-size: 60px;
+    background-image: linear-gradient(to right, rgba(50,100,255, 1), rgba(255, 0, 0, 1));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
     transform: translate(-50%,-50%);
     -ms-transform: translate(-50%,-50%);
 }
+
+#Game-Over-Message {
+    position: absolute;
+    top: 70%;
+    left: 50%;
+    font-size: 40px;
+    transform: translate(-50%,-50%);
+    -ms-transform: translate(-50%,-50%); 
+    text-wrap: nowrap;
+}
+

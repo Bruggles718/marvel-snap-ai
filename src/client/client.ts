@@ -112,9 +112,10 @@ window.onload = () => {
 
     populateHandHTML();
     populateColumsHTML();
-    populateEnergy();
-
+    
     energy = game.round;
+
+    populateEnergy();
     
     window.addEventListener("click", function(event) {
         if (event.target instanceof HTMLElement && (event.target instanceof HTMLButtonElement || event.target.parentNode instanceof HTMLButtonElement)) {
