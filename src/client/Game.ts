@@ -221,7 +221,11 @@ export class Game {
             overlay.style.display = "block";
             let playerWins = 0;
             let aiWins = 0;
+            let totalPlayerScore = 0;
+            let totalAIScore = 0;
             for (let column of this.columns) {
+                totalPlayerScore += column.GetPlayerValue();
+                totalAIScore += column.GetAIValue();
                 if (column.GetPlayerValue() > column.GetAIValue()) {
                     playerWins++;
                 } else if (column.GetAIValue() > column.GetPlayerValue()) {
@@ -236,8 +240,16 @@ export class Game {
                 gameOverMessage.textContent = "You Lose!";
                 gameOverMessage.classList.add("ai-win");
             } else {
-                gameOverMessage.textContent = "Tie Game!";
-                gameOverMessage.classList.add("tie");
+                if (totalPlayerScore > totalAIScore) {
+                    gameOverMessage.textContent = "You win!";
+                    gameOverMessage.classList.add("player-win");
+                } else if (totalAIScore > totalPlayerScore) {
+                    gameOverMessage.textContent = "You Lose!";
+                    gameOverMessage.classList.add("ai-win");
+                } else {
+                    gameOverMessage.textContent = "Tie Game!";
+                    gameOverMessage.classList.add("tie");
+                }   
             }
             return;
         }
