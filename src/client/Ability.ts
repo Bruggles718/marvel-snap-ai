@@ -100,7 +100,7 @@ export class BlackPantherAbility extends Ability {
                 for (let card of column.playerCards) {
                     if (card.name === "Black Panther") {
                         card.power *= 2;
-                        this.aiAbliityDone = true;
+                        this.playerAbilityDone = true;
                     }
                 }
             }
@@ -284,15 +284,10 @@ export class StarkTowerAbility extends Ability {
 
 
     public apply(i_game: Game) {
-        console.log("Applying Stark Tower. Round: ", i_game.round, " Column: ", this.columnToApply);
         if (i_game.round > 5) {
             const column = i_game.columns[this.columnToApply];
-            console.log("Column revealed: ", column.revealed);
-            // Might not need this but we should have it
             if (!column.revealed) return;
-            console.log("About to check player cards");
             for (let card of column.playerCards) {
-                console.log("Checking player card: ", card);
                 if (this.playersCardUpdated.indexOf(card.name) == -1) {
                     card.power += 2;
                     this.playersCardUpdated.push(card.name);

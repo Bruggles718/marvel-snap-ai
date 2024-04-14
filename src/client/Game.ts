@@ -229,7 +229,7 @@ export class Game {
             for (let column of this.columns) {
                 if (column.GetPlayerValue() > column.GetAIValue()) {
                     playerWins++;
-                } else {
+                } else if (column.GetAIValue() > column.GetPlayerValue()) {
                     aiWins++;
                 }
             }
@@ -237,9 +237,12 @@ export class Game {
             if (playerWins > aiWins) {
                 gameOverMessage.textContent = "You win!";
                 gameOverMessage.classList.add("player-win");
-            } else {
+            } else if (aiWins > playerWins) {
                 gameOverMessage.textContent = "You Lose!";
                 gameOverMessage.classList.add("ai-win");
+            } else {
+                gameOverMessage.textContent = "Tie Game!";
+                gameOverMessage.classList.add("tie");
             }
             return;
         }

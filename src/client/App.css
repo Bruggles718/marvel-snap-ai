@@ -91,6 +91,13 @@
     color: transparent;
 }
 
+.tie {
+    background-image: linear-gradient(to right, #00a1ff, #00ff8f);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
 #overlay {
     position: absolute;
     display: none;
